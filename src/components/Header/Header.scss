@@ -1,0 +1,9 @@
+@import "../../configs/default.config";
+
+.Header {
+  padding: $sm $md $sm $md;
+}
+
+.Header__Login {
+  text-align: right;
+}
