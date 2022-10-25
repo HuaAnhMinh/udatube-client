@@ -7,8 +7,18 @@ import Auth0Provider from "./Auth0Provider/Auth0Provider";
 import {MyProfileProvider} from "../contexts/MyProfile.context";
 import Profile from "./Profile/Profile";
 import ProtectedRoute from "./ProtectedRoute/ProtectedRoute";
+import {useError} from "../contexts/Error.context";
+import Page500 from "./Page500/Page500";
 
 function App() {
+  const { error } = useError();
+
+  if (error.message) {
+    return (
+      <Page500 />
+    );
+  }
+
   return (
     <Router basename={'/'}>
       <Auth0Provider>

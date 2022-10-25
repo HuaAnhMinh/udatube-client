@@ -4,6 +4,11 @@
   padding: $sm $md $sm $md;
 }
 
+.Header--mobile {
+  padding-left: $xs;
+  padding-right: $xs;
+}
+
 .Header__Login {
   text-align: right;
 }
