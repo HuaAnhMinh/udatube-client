@@ -9,6 +9,8 @@ import Profile from "./Profile/Profile";
 import ProtectedRoute from "./ProtectedRoute/ProtectedRoute";
 import {useError} from "../contexts/Error.context";
 import Page500 from "./Page500/Page500";
+import Users from "./Users/Users";
+import {UsersProvider} from "../contexts/Users.context";
 
 function App() {
   const { error } = useError();
@@ -23,12 +25,15 @@ function App() {
     <Router basename={'/'}>
       <Auth0Provider>
         <MyProfileProvider>
-          <Header />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/users/me" element={<ProtectedRoute component={Profile} />} />
-            <Route path="*" element={<Page404 />} />
-          </Routes>
+          <UsersProvider>
+            <Header />
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/users" element={<Users />} />
+              <Route path="/users/me" element={<ProtectedRoute component={Profile} />} />
+              <Route path="*" element={<Page404 />} />
+            </Routes>
+          </UsersProvider>
         </MyProfileProvider>
       </Auth0Provider>
     </Router>

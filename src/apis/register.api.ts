@@ -4,7 +4,7 @@ import {parseErrorResponse, parseSuccessResponse} from "../utils/response.util";
 
 const registerApi = async (accessToken: string) => {
   try {
-    const response = await api.get(endpoints.register(), {
+    const response = await api.post(endpoints.register(), {}, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
