@@ -17,7 +17,12 @@ const SearchBar = () => {
   };
 
   useEffect(() => {
-    setSearchText(location.search);
+    if (location.search.startsWith('?username=')) {
+      setSearchText(`username:${location.search.split('?username=')[1]}`);
+    }
+    else if (location.search.startsWith('?title=')) {
+      setSearchText(location.search.split('?title=')[1]);
+    }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (

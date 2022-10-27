@@ -1,3 +1,4 @@
+import { v4 } from 'uuid';
 import { uniqueNamesGenerator, adjectives, colors, animals } from 'unique-names-generator';
 import { ShortFormUser } from "../@types/user";
 
@@ -7,7 +8,7 @@ const generateUsers = () => {
   if (_users.length === 0) {
     for (let i = 0; i < 1000; ++i) {
       _users.push({
-        id: (Math.floor(Math.random() * 1000000) + 1).toString() + i.toString(),
+        id: v4(),
         username: uniqueNamesGenerator({
           dictionaries: [adjectives, animals, colors],
           length: 2
@@ -29,7 +30,7 @@ export const getUsers = async (username: string, limit: number = 3, nextKey: str
 
   const simulateFetchingTime = Math.floor(Math.random() * 5); // 0 - 5s
   const delayPromise = (second: number) => new Promise((res) => setTimeout(res, second));
-  await delayPromise(simulateFetchingTime * 1000);
+  await delayPromise(5 * 1000);
 
   return {
     users: usersToReturn,

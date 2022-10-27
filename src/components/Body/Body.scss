@@ -1,7 +1,8 @@
 @import "../../configs/default.config";
 
 .Body {
-  padding: $md;
+  padding: 86px $md $md;
+  overflow-y: auto;
 }
 
 .Body--mobile {

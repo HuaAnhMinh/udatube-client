@@ -21,7 +21,14 @@ const Header = () => {
 
   if (width >= 900) {
     return (
-      <Grid container justifyContent={'space-between'} className={"Header"} alignItems={'center'} id={'header'}>
+      <Grid
+        container
+        justifyContent={'space-between'}
+        className={"Header"}
+        alignItems={'center'}
+        id={'header'}
+        sx={{ borderBottom: '1px solid #eeeeee' }}
+      >
         <Grid item xs={3}>
           <div>
             <Logo/>

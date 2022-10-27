@@ -1,5 +1,5 @@
 import {useAuth0} from "@auth0/auth0-react";
-import {Button} from "@mui/material";
+import {Button, IconButton} from "@mui/material";
 
 const LoginButton = ({ maxWidth }: { maxWidth?: boolean }) => {
   const { loginWithRedirect, isAuthenticated, isLoading } = useAuth0();
@@ -17,13 +17,15 @@ const LoginButton = ({ maxWidth }: { maxWidth?: boolean }) => {
 
   if (isLoading) {
     return (
-      <Button
-        variant={'outlined'}
-        disabled
-        style={{ width: maxWidth ? '100%' : 'inherit' }}
-      >
-        Loading...
-      </Button>
+      <IconButton
+        style={{
+          height: '56px',
+          width: '56px',
+          borderRadius: '50%',
+          backgroundImage: 'linear-gradient(to right, lightgrey , #eeeeee)',
+          textAlign: 'right',
+        }}
+      />
     );
   }
 

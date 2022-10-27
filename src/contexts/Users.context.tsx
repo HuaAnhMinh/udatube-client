@@ -4,6 +4,8 @@ import getUsersApi from "../apis/getUsers.api";
 import { SuccessResponse } from "../utils/response.util";
 
 export const usersReducer = (state: UsersState, action: UsersAction) => {
+  console.log(state);
+  console.log(action);
   switch (action.type) {
     case "setUsers":
       return action.payload;
@@ -12,6 +14,7 @@ export const usersReducer = (state: UsersState, action: UsersAction) => {
         ...state,
         nextKey: action.payload.nextKey,
         users: [...state.users, ...action.payload.users],
+        isFetching: false,
       };
     case "setIsFetching":
       return {

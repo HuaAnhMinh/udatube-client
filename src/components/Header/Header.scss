@@ -2,6 +2,10 @@
 
 .Header {
   padding: $sm $md $sm $md;
+  height: 76px;
+  position: fixed;
+  background: white;
+  z-index: 1000;
 }
 
 .Header--mobile {

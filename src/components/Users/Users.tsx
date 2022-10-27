@@ -1,4 +1,4 @@
-import {useCallback, useEffect} from "react";
+import {useEffect} from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import {useUsers} from "../../contexts/Users.context";
 import {useLocation} from "react-router-dom";
@@ -21,22 +21,16 @@ const Users = () => {
     if (scroll && scroll.clientHeight < height && users.nextKey) {
       void fetchUsers(location.search.split('?username=')[1], false);
     }
-  }, [height]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const scrollRef = useCallback((node: HTMLDivElement) => {
-    if (node && node.clientHeight < height && users.nextKey) {
-      void fetchUsers(location.search.split('?username=')[1], false);
-    }
-  }, [fetchUsers, height, location.search, users.nextKey]);
+  }, [height, users.nextKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <>
-      <div id={"scroll"} ref={scrollRef}>
+      <div id={"scroll"}>
         <InfiniteScroll
-          dataLength={users.users.length}
           next={() => fetchUsers(location.search.split('?username=')[1], false)}
           hasMore={!!users.nextKey}
           loader={<></>}
+          dataLength={users.users.length}
         >
           <Grid container spacing={4} alignItems={'center'} sx={{ padding: '2px' }}>
             {
@@ -47,15 +41,14 @@ const Users = () => {
           </Grid>
         </InfiniteScroll>
       </div>
-      {
-        users.isFetching &&
-        <Grid container spacing={4} alignItems={'center'} sx={{ padding: '2px' }}>
-          <UserCardLoading />
-          <UserCardLoading />
-          <UserCardLoading />
-          <UserCardLoading />
-        </Grid>
-      }
+    {
+      users.isFetching &&
+      <Grid container spacing={4} alignItems={'center'} sx={{ padding: '2px' }}>
+        <UserCardLoading />
+        <UserCardLoading />
+        <UserCardLoading />
+      </Grid>
+    }
     </>
   );
 };
