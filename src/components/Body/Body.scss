@@ -1,0 +1,9 @@
+@import "../../configs/default.config";
+
+.Body {
+  padding: $md;
+}
+
+.Body--mobile {
+  padding: $sm $xs;
+}

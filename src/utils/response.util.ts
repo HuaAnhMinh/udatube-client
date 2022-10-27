@@ -30,10 +30,10 @@ export type SuccessResponse = {
   data: any;
 };
 
-export const parseSuccessResponse = (r: any, key: string): SuccessResponse => {
+export const parseSuccessResponse = (r: any): SuccessResponse => {
   const response = r as AxiosResponse;
   return {
     statusCode: response.status,
-    data: response.data[key],
+    data: response.data,
   };
 };

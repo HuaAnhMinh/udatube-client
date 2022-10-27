@@ -1,19 +1,38 @@
 import {ShortFormUser} from "../@types/user";
 import {createContext, ReactNode, useCallback, useContext, useReducer} from "react";
+import getUsersApi from "../apis/getUsers.api";
+import { SuccessResponse } from "../utils/response.util";
 
 export const usersReducer = (state: UsersState, action: UsersAction) => {
   switch (action.type) {
     case "setUsers":
       return action.payload;
+    case "addUsers":
+      return {
+        ...state,
+        nextKey: action.payload.nextKey,
+        users: [...state.users, ...action.payload.users],
+      };
+    case "setIsFetching":
+      return {
+        ...state,
+        isFetching: true,
+      };
     default:
       return state;
   }
 };
 
-export type UsersState = ShortFormUser[];
+export type UsersState = {
+  users: ShortFormUser[];
+  nextKey: string | null;
+  isFetching: boolean;
+};
 
 export type UsersActionsMap = {
   setUsers: UsersState;
+  addUsers: UsersState;
+  setIsFetching: any;
 };
 
 export type UsersAction = {
@@ -30,7 +49,11 @@ export type UsersDispatcher = <Type extends UsersAction['type'], Payload extends
 
 type UsersContextInterface = readonly [UsersState, UsersDispatcher];
 
-const initialState: UsersState = [];
+const initialState: UsersState = {
+  users: [],
+  nextKey: null,
+  isFetching: false,
+};
 
 export const UsersContext = createContext<UsersContextInterface>([initialState, () => {}]);
 
@@ -51,12 +74,30 @@ export const UsersProvider = ({ children }: { children: ReactNode }) => {
 export const useUsers = () => {
   const [users, dispatch] = useContext(UsersContext);
 
-  const setUsers = useCallback(async (username: string) => {
-    dispatch('setUsers', []);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const fetchUsers = useCallback(async (username: string, fetchFromStart: boolean = true) => {
+    console.log('Fetching...');
+    dispatch('setIsFetching', {});
+
+    const response = await getUsersApi(username, 8, users.nextKey);
+    const data = (response as SuccessResponse).data;
+    let actionType: 'setUsers' | 'addUsers';
+    if (fetchFromStart) {
+      actionType = 'setUsers';
+    }
+    else {
+      actionType = 'addUsers';
+    }
+
+    console.log(actionType);
+    dispatch(actionType, {
+      users: data.users,
+      nextKey: data.nextKey,
+      isFetching: false,
+    });
+  }, [users, dispatch]);
 
   return {
     users,
-    setUsers,
+    fetchUsers,
   };
 };

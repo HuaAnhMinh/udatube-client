@@ -9,4 +9,5 @@ export type User = {
 export type ShortFormUser = {
   id: string;
   username: string;
+  totalSubscribers: number;
 };

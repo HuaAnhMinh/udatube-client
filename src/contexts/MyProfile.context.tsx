@@ -72,9 +72,8 @@ export const useMyProfile = () => {
     if (isAuthenticated) {
       const accessToken = (await getIdTokenClaims())!!.__raw;
       let response = await getMyProfileApi(accessToken);
-      console.log(response);
       if (response.statusCode === 200) {
-        dispatch('setMyProfile', (response as SuccessResponse).data);
+        dispatch('setMyProfile', (response as SuccessResponse).data.user);
       }
       else if (response.statusCode === 404) {
         response = await registerApi(accessToken);

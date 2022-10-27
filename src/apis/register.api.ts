@@ -9,7 +9,7 @@ const registerApi = async (accessToken: string) => {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    return parseSuccessResponse(response, 'message');
+    return parseSuccessResponse(response);
   }
   catch (e: any) {
     return parseErrorResponse(e);

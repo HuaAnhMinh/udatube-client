@@ -11,6 +11,7 @@ import {useError} from "../contexts/Error.context";
 import Page500 from "./Page500/Page500";
 import Users from "./Users/Users";
 import {UsersProvider} from "../contexts/Users.context";
+import Body from "./Body/Body";
 
 function App() {
   const { error } = useError();
@@ -27,12 +28,14 @@ function App() {
         <MyProfileProvider>
           <UsersProvider>
             <Header />
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/users" element={<Users />} />
-              <Route path="/users/me" element={<ProtectedRoute component={Profile} />} />
-              <Route path="*" element={<Page404 />} />
-            </Routes>
+            <Body>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/users" element={<Users />} />
+                <Route path="/users/me" element={<ProtectedRoute component={Profile} />} />
+                <Route path="*" element={<Page404 />} />
+              </Routes>
+            </Body>
           </UsersProvider>
         </MyProfileProvider>
       </Auth0Provider>

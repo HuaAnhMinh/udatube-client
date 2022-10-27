@@ -1,11 +1,12 @@
 import {InputBase, Paper} from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import {FormEvent, useState} from "react";
-import {useNavigate} from "react-router-dom";
+import {FormEvent, useEffect, useState} from "react";
+import {useLocation, useNavigate} from "react-router-dom";
 
 const SearchBar = () => {
   const [searchText, setSearchText] = useState<string>('');
   const navigate = useNavigate();
+  const location = useLocation();
 
   const onHandleSearch = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -14,6 +15,10 @@ const SearchBar = () => {
     }
     return navigate(`/videos?title=${searchText}`);
   };
+
+  useEffect(() => {
+    setSearchText(location.search);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Paper

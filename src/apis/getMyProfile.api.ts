@@ -1,6 +1,5 @@
 import api from "../configs/api.config";
 import endpoints from "../configs/endpoints.config";
-import {User} from "../@types/user";
 import {ErrorResponse, parseErrorResponse, parseSuccessResponse, SuccessResponse} from "../utils/response.util";
 
 const getMyProfileApi = async (accessToken: string): Promise<SuccessResponse | ErrorResponse> => {
@@ -10,7 +9,7 @@ const getMyProfileApi = async (accessToken: string): Promise<SuccessResponse | E
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    return parseSuccessResponse(response, 'user');
+    return parseSuccessResponse(response);
   }
   catch (e) {
     return parseErrorResponse(e);

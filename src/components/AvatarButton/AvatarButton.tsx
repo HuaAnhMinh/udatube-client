@@ -26,7 +26,7 @@ const AvatarButton = () => {
     };
 
     void _fetchMyProfile();
-  }, [fetchMyProfile]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const { width } = useWindowDimensions();
 
