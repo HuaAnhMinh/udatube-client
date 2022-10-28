@@ -4,8 +4,6 @@ import getUsersApi from "../apis/getUsers.api";
 import { SuccessResponse } from "../utils/response.util";
 
 export const usersReducer = (state: UsersState, action: UsersAction) => {
-  console.log(state);
-  console.log(action);
   switch (action.type) {
     case "setUsers":
       return action.payload;
@@ -78,20 +76,24 @@ export const useUsers = () => {
   const [users, dispatch] = useContext(UsersContext);
 
   const fetchUsers = useCallback(async (username: string, fetchFromStart: boolean = true) => {
-    console.log('Fetching...');
-    dispatch('setIsFetching', {});
-
-    const response = await getUsersApi(username, 8, users.nextKey);
-    const data = (response as SuccessResponse).data;
     let actionType: 'setUsers' | 'addUsers';
     if (fetchFromStart) {
       actionType = 'setUsers';
+      dispatch(actionType, {
+        users: [],
+        nextKey: null,
+        isFetching: false,
+      });
     }
     else {
       actionType = 'addUsers';
     }
 
-    console.log(actionType);
+    dispatch('setIsFetching', {});
+
+    const response = await getUsersApi(username, 8, users.nextKey);
+    const data = (response as SuccessResponse).data;
+
     dispatch(actionType, {
       users: data.users,
       nextKey: data.nextKey,

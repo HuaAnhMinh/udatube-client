@@ -4,6 +4,7 @@ const endpoints = {
   base: host,
   register: () => `${host}/users`,
   getProfile: () => `${host}/users/me`,
+  getUsers: () => `${host}/users?`,
 };
 
 export default endpoints;

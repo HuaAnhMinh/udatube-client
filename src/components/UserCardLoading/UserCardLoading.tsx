@@ -2,8 +2,8 @@ import {Box, Button, Card, CardContent, Grid} from "@mui/material";
 
 const UserCardLoading = () => {
   return (
-    <Grid item xs={12} md={6} lg={4} xl={3} sx={{ padding: '2px' }}>
-      <Card sx={{ display: 'flex', padding: '20px', cursor: 'pointer' }}>
+    <Grid item xs={12} md={6} xl={4} sx={{ padding: '2px' }}>
+      <Card sx={{ display: 'flex', padding: '20px', cursor: 'pointer', alignItems: 'center' }}>
         <Box sx={{
           width: '150px',
           height: '150px',
