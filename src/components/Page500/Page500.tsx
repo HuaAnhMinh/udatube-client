@@ -3,7 +3,7 @@ import SentimentVeryDissatisfiedIcon from "@mui/icons-material/SentimentVeryDiss
 
 const Page500 = () => {
   return (
-    <div>
+    <div style={{ textAlign: 'center' }}>
       <Typography
         variant={'h1'}
         component={'h1'}

@@ -2,9 +2,9 @@ import api from "../configs/api.config";
 import endpoints from "../configs/endpoints.config";
 import {ErrorResponse, parseErrorResponse, parseSuccessResponse, SuccessResponse} from "../utils/response.util";
 
-const getMyProfileApi = async (accessToken: string): Promise<SuccessResponse | ErrorResponse> => {
+const getUserApi = async (accessToken: string, userId: string): Promise<SuccessResponse | ErrorResponse> => {
   try {
-    const response = await api.get(endpoints.getMyProfile(), {
+    const response = await api.get(endpoints.getUser(userId), {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -16,4 +16,4 @@ const getMyProfileApi = async (accessToken: string): Promise<SuccessResponse | E
   }
 };
 
-export default getMyProfileApi;
+export default getUserApi;
