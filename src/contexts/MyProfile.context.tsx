@@ -6,6 +6,8 @@ import {ErrorResponse, SuccessResponse} from "../utils/response.util";
 import registerApi from "../apis/register.api";
 import {useError} from "./Error.context";
 import {useUsers} from "./Users.context";
+import subscribeApi from "../apis/subscribe.api";
+import unsubscribeApi from "../apis/unsubscribe.api";
 
 export const myProfileReducer = (state: MyProfileState, action: MyProfileAction): MyProfileState => {
   switch (action.type) {
@@ -20,7 +22,8 @@ export const myProfileReducer = (state: MyProfileState, action: MyProfileAction)
         user: {
           ...state.user,
           subscribedChannels: [...state.user.subscribedChannels, action.payload],
-        }
+        },
+        isSubscribing: state.isSubscribing.filter(id => id !== action.payload),
       };
     case 'unsubscribe':
       return {
@@ -28,8 +31,31 @@ export const myProfileReducer = (state: MyProfileState, action: MyProfileAction)
         user: {
           ...state.user,
           subscribedChannels: state.user.subscribedChannels.filter(channel => channel !== action.payload),
+        },
+        isUnsubscribing: state.isUnsubscribing.filter(id => id !== action.payload),
+      }
+    case "setIsSubscribing":
+      if (state.isSubscribing.includes(action.payload)) {
+        return {
+          ...state,
+          isSubscribing: state.isSubscribing.filter(id => id !== action.payload),
         }
       }
+      return {
+        ...state,
+        isSubscribing: [...state.isSubscribing, action.payload],
+      };
+    case "setIsUnsubscribing":
+      if (state.isUnsubscribing.includes(action.payload)) {
+        return {
+          ...state,
+          isUnsubscribing: state.isUnsubscribing.filter(id => id !== action.payload),
+        };
+      }
+      return {
+        ...state,
+        isUnsubscribing: [...state.isUnsubscribing, action.payload],
+      };
     default:
       return state;
   }
@@ -37,14 +63,16 @@ export const myProfileReducer = (state: MyProfileState, action: MyProfileAction)
 
 export type MyProfileState = {
   user: User;
-  isSubscribing: boolean;
-  isUnsubscribing: boolean;
+  isSubscribing: string[];
+  isUnsubscribing: string[];
 };
 
 export type MyProfileActionsMap = {
   setMyProfile: User;
   subscribe: string;
   unsubscribe: string;
+  setIsSubscribing: string;
+  setIsUnsubscribing: string;
 };
 
 export type MyProfileAction = {
@@ -69,8 +97,8 @@ const initialState: MyProfileState = {
     videos: [],
     totalSubscribers: 0,
   },
-  isSubscribing: false,
-  isUnsubscribing: false,
+  isSubscribing: [],
+  isUnsubscribing: [],
 };
 
 export const MyProfileContext = createContext<MyProfileContextInterface>([initialState, () => {}]);
@@ -123,14 +151,34 @@ export const useMyProfile = () => {
   }, [dispatch, getIdTokenClaims, isAuthenticated, setError]);
   
   const subscribeChannel = useCallback(async (userId: string) => {
-    dispatch('subscribe', userId);
-    increaseSubscribers(userId);
-  }, [dispatch, increaseSubscribers]);
+    if (isAuthenticated) {
+      dispatch('setIsSubscribing', userId);
+      const accessToken = (await getIdTokenClaims())!!.__raw;
+      const result = await subscribeApi(accessToken, userId);
+      if (result.statusCode === 200) {
+        dispatch('subscribe', userId);
+        increaseSubscribers(userId);
+      }
+      else {
+        dispatch('setIsSubscribing', '');
+      }
+    }
+  }, [dispatch, getIdTokenClaims, increaseSubscribers, isAuthenticated]);
 
   const unsubscribeChannel = useCallback(async (userId: string) => {
-    dispatch('unsubscribe', userId);
-    decreaseSubscribers(userId);
-  }, [decreaseSubscribers, dispatch]);
+    if (isAuthenticated) {
+      dispatch('setIsUnsubscribing', userId);
+      const accessToken = (await getIdTokenClaims())!!.__raw;
+      const result = await unsubscribeApi(accessToken, userId);
+      if (result.statusCode === 200) {
+        dispatch('unsubscribe', userId);
+        decreaseSubscribers(userId);
+      }
+      else {
+        dispatch('setIsUnsubscribing', '');
+      }
+    }
+  }, [decreaseSubscribers, dispatch, getIdTokenClaims, isAuthenticated]);
 
   return {
     myProfile,

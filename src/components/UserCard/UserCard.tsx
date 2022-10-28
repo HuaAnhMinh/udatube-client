@@ -89,7 +89,7 @@ const UserCard = ({ user }: { user: ShortFormUser }) => {
           </CardContent>
           <Box sx={{ pl: '16px', pb: 1 }}>
             {
-              isLoading &&
+              (isLoading || (isAuthenticated && !myProfile.user.id)) &&
               <Button disabled variant={"outlined"}>
                 Checking subscription...
               </Button>
@@ -99,6 +99,7 @@ const UserCard = ({ user }: { user: ShortFormUser }) => {
               isAuthenticated &&
               !isLoading &&
               myProfile.user.subscribedChannels.includes(user.id) &&
+              !myProfile.isUnsubscribing.includes(user.id) &&
               <Button variant={"outlined"} color={"error"} onClick={() => unsubscribeChannel(user.id)}>
                 Unsubscribe
               </Button>
@@ -107,8 +108,10 @@ const UserCard = ({ user }: { user: ShortFormUser }) => {
             {
               isAuthenticated &&
               !isLoading &&
+              myProfile.user.id &&
               !myProfile.user.subscribedChannels.includes(user.id) &&
               myProfile.user.id !== user.id &&
+              !myProfile.isSubscribing.includes(user.id) &&
               <Button variant={"contained"} color={"error"} onClick={() => subscribeChannel(user.id)}>
                 Subscribe
               </Button>
@@ -138,6 +141,20 @@ const UserCard = ({ user }: { user: ShortFormUser }) => {
                   </div>
                 </Menu>
               </>
+            }
+
+            {
+              myProfile.isSubscribing.includes(user.id) &&
+              <Button disabled variant={"outlined"}>
+                Subscribing...
+              </Button>
+            }
+
+            {
+              myProfile.isUnsubscribing.includes(user.id) &&
+              <Button disabled variant={"outlined"}>
+                Unsubscribing...
+              </Button>
             }
           </Box>
         </Box>

@@ -1,7 +1,7 @@
 import {InputBase, Paper} from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import {FormEvent, useEffect, useState} from "react";
-import {useLocation, useNavigate} from "react-router-dom";
+import {FormEvent, useState} from "react";
+import {useNavigate, useLocation} from "react-router-dom";
 
 const SearchBar = () => {
   const [searchText, setSearchText] = useState<string>('');
@@ -11,19 +11,16 @@ const SearchBar = () => {
   const onHandleSearch = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (searchText.startsWith('username:')) {
+      if (location.search === `?username=${searchText.split('username:')[1]}`) {
+        return navigate(0);
+      }
       return navigate(`/users?username=${searchText.split('username:')[1]}`);
+    }
+    if (location.search === `/videos?title=${searchText}`) {
+      return navigate(0);
     }
     return navigate(`/videos?title=${searchText}`);
   };
-
-  useEffect(() => {
-    if (location.search.startsWith('?username=')) {
-      setSearchText(`username:${location.search.split('?username=')[1]}`);
-    }
-    else if (location.search.startsWith('?title=')) {
-      setSearchText(location.search.split('?title=')[1]);
-    }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Paper

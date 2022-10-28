@@ -5,6 +5,8 @@ const endpoints = {
   register: () => `${host}/users`,
   getProfile: () => `${host}/users/me`,
   getUsers: () => `${host}/users?`,
+  subscribe: (userId: string) => `${host}/users/${userId}/subscribe`,
+  unsubscribe: (userId: string) => `${host}/users/${userId}/unsubscribe`,
 };
 
 export default endpoints;
