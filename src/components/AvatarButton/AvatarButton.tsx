@@ -30,7 +30,7 @@ const AvatarButton = () => {
 
   const { width } = useWindowDimensions();
 
-  if (isAuthenticated && myProfile.id) {
+  if (isAuthenticated && myProfile.user.id) {
     if (width >= 900) {
       return (
         <>
@@ -40,7 +40,7 @@ const AvatarButton = () => {
             aria-expanded={open ? 'true' : undefined}
             onClick={handleClick}
           >
-            <Avatar alt={myProfile.username} src={`https://udatube-avatars-dev.s3.amazonaws.com/${myProfile.id}.png`} />
+            <Avatar alt={myProfile.user.username} src={`https://udatube-avatars-dev.s3.amazonaws.com/${myProfile.user.id}.png`} />
           </IconButton>
           <Menu
             anchorEl={anchorEl}

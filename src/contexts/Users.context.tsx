@@ -19,6 +19,32 @@ export const usersReducer = (state: UsersState, action: UsersAction) => {
         ...state,
         isFetching: true,
       };
+    case "increaseSubscribers":
+      return {
+        ...state,
+        users: state.users.map(user => {
+          if (user.id === action.payload) {
+            return {
+              ...user,
+              totalSubscribers: user.totalSubscribers + 1,
+            };
+          }
+          return user;
+        }),
+      };
+    case "decreaseSubscribers":
+      return {
+        ...state,
+        users: state.users.map(user => {
+          if (user.id === action.payload) {
+            return {
+              ...user,
+              totalSubscribers: user.totalSubscribers - 1,
+            };
+          }
+          return user;
+        }),
+      };
     default:
       return state;
   }
@@ -34,6 +60,8 @@ export type UsersActionsMap = {
   setUsers: UsersState;
   addUsers: UsersState;
   setIsFetching: any;
+  increaseSubscribers: string;
+  decreaseSubscribers: string;
 };
 
 export type UsersAction = {
@@ -101,8 +129,18 @@ export const useUsers = () => {
     });
   }, [users, dispatch]);
 
+  const increaseSubscribers = useCallback((userId: string) => {
+    dispatch('increaseSubscribers', userId);
+  }, [dispatch]);
+
+  const decreaseSubscribers = useCallback((userId: string) => {
+    dispatch('decreaseSubscribers', userId);
+  }, [dispatch]);
+
   return {
     users,
     fetchUsers,
+    increaseSubscribers,
+    decreaseSubscribers,
   };
 };

@@ -7,8 +7,9 @@ const LoginButton = ({ maxWidth }: { maxWidth?: boolean }) => {
     return (
       <Button
         onClick={loginWithRedirect}
-        variant={'outlined'}
+        variant={'contained'}
         style={{ width: maxWidth ? '100%' : 'inherit' }}
+        color={"error"}
       >
         Login
       </Button>

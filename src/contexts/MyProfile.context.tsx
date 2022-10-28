@@ -5,20 +5,46 @@ import {useAuth0} from "@auth0/auth0-react";
 import {ErrorResponse, SuccessResponse} from "../utils/response.util";
 import registerApi from "../apis/register.api";
 import {useError} from "./Error.context";
+import {useUsers} from "./Users.context";
 
 export const myProfileReducer = (state: MyProfileState, action: MyProfileAction): MyProfileState => {
   switch (action.type) {
     case "setMyProfile":
-      return action.payload;
+      return {
+        ...state,
+        user: action.payload,
+      };
+    case 'subscribe':
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          subscribedChannels: [...state.user.subscribedChannels, action.payload],
+        }
+      };
+    case 'unsubscribe':
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          subscribedChannels: state.user.subscribedChannels.filter(channel => channel !== action.payload),
+        }
+      }
     default:
       return state;
   }
 };
 
-export type MyProfileState = User;
+export type MyProfileState = {
+  user: User;
+  isSubscribing: boolean;
+  isUnsubscribing: boolean;
+};
 
 export type MyProfileActionsMap = {
-  setMyProfile: MyProfileState;
+  setMyProfile: User;
+  subscribe: string;
+  unsubscribe: string;
 };
 
 export type MyProfileAction = {
@@ -36,11 +62,15 @@ export type MyProfileDispatcher = <Type extends MyProfileAction["type"], Payload
 type MyProfileContextInterface = readonly [MyProfileState, MyProfileDispatcher];
 
 const initialState: MyProfileState = {
-  id: '',
-  username: '',
-  subscribedChannels: [],
-  videos: [],
-  totalSubscribers: 0,
+  user: {
+    id: '',
+    username: '',
+    subscribedChannels: [],
+    videos: [],
+    totalSubscribers: 0,
+  },
+  isSubscribing: false,
+  isUnsubscribing: false,
 };
 
 export const MyProfileContext = createContext<MyProfileContextInterface>([initialState, () => {}]);
@@ -65,6 +95,11 @@ export const useMyProfile = () => {
     isAuthenticated,
     getIdTokenClaims,
   } = useAuth0();
+  
+  const {
+    increaseSubscribers,
+    decreaseSubscribers,
+  } = useUsers();
 
   const { setError } = useError();
   
@@ -85,10 +120,22 @@ export const useMyProfile = () => {
         setError(response.statusCode, (response as ErrorResponse).message);
       }
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [dispatch, getIdTokenClaims, isAuthenticated, setError]);
+  
+  const subscribeChannel = useCallback(async (userId: string) => {
+    dispatch('subscribe', userId);
+    increaseSubscribers(userId);
+  }, [dispatch, increaseSubscribers]);
+
+  const unsubscribeChannel = useCallback(async (userId: string) => {
+    dispatch('unsubscribe', userId);
+    decreaseSubscribers(userId);
+  }, [decreaseSubscribers, dispatch]);
 
   return {
     myProfile,
     fetchMyProfile,
+    subscribeChannel,
+    unsubscribeChannel,
   };
 };
