@@ -3,6 +3,7 @@ import {createContext, ReactNode, useCallback, useContext, useReducer} from "rea
 import getUserApi from "../apis/getUser.api";
 import {useAuth0} from "@auth0/auth0-react";
 import {SuccessResponse} from "../utils/response.util";
+import {useMyProfile} from "./MyProfile.context";
 
 export const userReducer = (state: UserState, action: UserAction) => {
   switch (action.type) {
@@ -89,6 +90,10 @@ export const useUser = () => {
     getIdTokenClaims,
   } = useAuth0();
   
+  const {
+    myProfile,
+  } = useMyProfile();
+  
   const fetchUser = useCallback(async (id: string) => {
     if (isAuthenticated) {
       dispatch("setIsFetching", true);
@@ -104,8 +109,15 @@ export const useUser = () => {
     }
   }, [dispatch, getIdTokenClaims, isAuthenticated]);
   
+  const mapMyProfileToUser = useCallback(() => {
+    if (isAuthenticated && myProfile.user.id) {
+      dispatch("setUser", myProfile.user);
+    }
+  }, [dispatch, isAuthenticated, myProfile.user]);
+  
   return {
     fetchUser,
+    mapMyProfileToUser,
     user,
   }
 };

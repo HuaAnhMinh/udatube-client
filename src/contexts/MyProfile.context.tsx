@@ -56,6 +56,11 @@ export const myProfileReducer = (state: MyProfileState, action: MyProfileAction)
         ...state,
         isUnsubscribing: [...state.isUnsubscribing, action.payload],
       };
+    case "setIsFetching":
+      return {
+        ...state,
+        isFetching: action.payload,
+      };
     default:
       return state;
   }
@@ -65,6 +70,7 @@ export type MyProfileState = {
   user: User;
   isSubscribing: string[];
   isUnsubscribing: string[];
+  isFetching: boolean;
 };
 
 export type MyProfileActionsMap = {
@@ -73,6 +79,7 @@ export type MyProfileActionsMap = {
   unsubscribe: string;
   setIsSubscribing: string;
   setIsUnsubscribing: string;
+  setIsFetching: boolean;
 };
 
 export type MyProfileAction = {
@@ -99,6 +106,7 @@ const initialState: MyProfileState = {
   },
   isSubscribing: [],
   isUnsubscribing: [],
+  isFetching: false,
 };
 
 export const MyProfileContext = createContext<MyProfileContextInterface>([initialState, () => {}]);
@@ -133,6 +141,7 @@ export const useMyProfile = () => {
   
   const fetchMyProfile = useCallback(async () => {
     if (isAuthenticated) {
+      dispatch("setIsFetching", true);
       const accessToken = (await getIdTokenClaims())!!.__raw;
       let response = await getMyProfileApi(accessToken);
       if (response.statusCode === 200) {
@@ -147,6 +156,7 @@ export const useMyProfile = () => {
       else {
         setError(response.statusCode, (response as ErrorResponse).message);
       }
+      dispatch("setIsFetching", false);
     }
   }, [dispatch, getIdTokenClaims, isAuthenticated, setError]);
   

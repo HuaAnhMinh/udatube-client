@@ -1,0 +1,11 @@
+@import "../../configs/default.config";
+
+.Profile {
+  padding: $lg 0;
+}
+
+@media only screen and (max-width: $width-md) {
+  .Profile {
+    padding: $md 0;
+  }
+}
