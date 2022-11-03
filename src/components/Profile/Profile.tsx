@@ -12,22 +12,20 @@ import CircularProgress from '@mui/material/CircularProgress';
 const Profile = () => {
   const location = useLocation();
   const { width } = useWindowDimensions();
-  const { user, fetchUser, mapMyProfileToUser } = useUser();
-  const { myProfile } = useMyProfile();
+  const { user, fetchUser } = useUser();
+  const { myProfile, updateUsername } = useMyProfile();
   const [openEditUsername, setOpenEditUsername] = useState(false);
+  const [username, setUsername] = useState('');
 
   useEffect(() => {
-    if (location.pathname !== '/users/me') {
+    if (location.pathname.split('/')[2] !== 'me') {
       void fetchUser(location.pathname.split('/')[2]);
     }
-    else {
-      void mapMyProfileToUser();
-    }
-  }, [fetchUser, location.pathname, mapMyProfileToUser]);
+  }, [fetchUser, location.pathname]);
 
   useEffect(() => {
-    console.log(user.isFetching);
-  }, [user.isFetching]);
+    setUsername(myProfile.user.username);
+  }, [myProfile.user.username]);
 
   if (user.isFailed) {
     return <Page404 />
@@ -40,7 +38,8 @@ const Profile = () => {
           <Grid container direction={"column"} justifyContent={"center"} alignItems={"center"}>
             <Grid item>
               {
-                (user.isFetching) &&
+                ((location.pathname.split('/')[2] === 'me' && !myProfile.user.id) ||
+                  (location.pathname.split('/')[2] !== 'me' && user.isFetching)) &&
                 <div>
                   <CircularProgress color={'error'} style={
                     width <= 900 ? {
@@ -56,7 +55,7 @@ const Profile = () => {
                 </div>
               }
               {
-                !user.isFetching && user.user.id && user.user.id !== myProfile.user.id &&
+                location.pathname.split('/')[2] !== 'me' && !user.isFetching &&
                 <Avatar
                   alt={user.user.username}
                   src={`https://udatube-avatars-dev.s3.amazonaws.com/${user.user.id}.png`}
@@ -64,7 +63,7 @@ const Profile = () => {
                 />
               }
               {
-                !user.isFetching && user.user.id === myProfile.user.id &&
+                location.pathname.split('/')[2] === 'me' && myProfile.user.id &&
                 <IconButton component={"label"}>
                   <input
                     type={"file"}
@@ -72,8 +71,8 @@ const Profile = () => {
                     hidden
                   />
                   <Avatar
-                    alt={user.user.username}
-                    src={`https://udatube-avatars-dev.s3.amazonaws.com/${user.user.id}.png`}
+                    alt={myProfile.user.username}
+                    src={`https://udatube-avatars-dev.s3.amazonaws.com/${myProfile.user.id}.png`}
                     sx={width <= 900 ? { width: 150, height: 150 } : { width: 200, height: 200 }}
                   />
                 </IconButton>
@@ -81,7 +80,8 @@ const Profile = () => {
             </Grid>
             <Grid item width="100%" style={{ textAlign: 'center' }}>
               {
-                user.isFetching &&
+                ((location.pathname.split('/')[2] === 'me' && !myProfile.user.id) ||
+                  (location.pathname.split('/')[2] !== 'me' && user.isFetching)) &&
                 <div
                   style={{
                     height: '100%',
@@ -91,15 +91,16 @@ const Profile = () => {
                 />
               }
               {
-                !user.isFetching && !openEditUsername &&
+                ((location.pathname.split('/')[2] === 'me' && myProfile.user.id) ||
+                  (location.pathname.split('/')[2] !== 'me' && !user.isFetching)) && !openEditUsername &&
                 <Typography
                   component={"h1"}
                   variant={width <= 900 ? 'h5' : 'h4'}
                   sx={{ padding: '15px 0' }}
                 >
-                  {user.user.username}
+                  {location.pathname.split('/')[2] === 'me' ? myProfile.user.username : user.user.username}
                   {
-                    user.user.id === myProfile.user.id &&
+                    location.pathname.split('/')[2] === 'me' &&
                     <>&nbsp;
                       <IconButton
                         sx={{ pt: '4px' }}
@@ -111,27 +112,38 @@ const Profile = () => {
                 </Typography>
               }
               {
-                !user.isFetching && openEditUsername && user.user.id === myProfile.user.id &&
+                location.pathname.split('/')[2] === 'me' && myProfile.user.id && openEditUsername &&
                 <>
                   <Grid container justifyContent={"center"} alignItems={"center"}>
-                    <Grid item sx={{ mt: '5px', p: '0 5px' }} xs={12} md={8}>
-                      <TextField fullWidth variant={"outlined"} value={user.user.username} />
+                    <Grid item sx={{ mt: '5px', p: '0 5px' }} xs={12} md={10}>
+                      <TextField
+                        fullWidth
+                        variant={"outlined"}
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                      />
                     </Grid>
-                    <Grid item sx={{ mt: '5px', p: '0 5px' }} xs={6} md={2}>
+                    <Grid item sx={{ mt: '5px', p: '0 5px' }} xs={6} md={5}>
                       <Button
                         variant={"contained"}
                         color={"error"}
                         fullWidth
+                        onClick={() => {
+                          void updateUsername(username);
+                          setOpenEditUsername(false);
+                        }}
+                        disabled={myProfile.isFetching}
                       >
-                        Accept
+                        { myProfile.isFetching ? <CircularProgress color={'error'} size={20} /> : 'Accept' }
                       </Button>
                     </Grid>
-                    <Grid item sx={{ mt: '5px', p: '0 5px' }} xs={6} md={2}>
+                    <Grid item sx={{ mt: '5px', p: '0 5px' }} xs={6} md={5}>
                       <Button
                         variant={"outlined"}
                         color={"primary"}
                         fullWidth
                         onClick={() => setOpenEditUsername(false)}
+                        disabled={myProfile.isFetching}
                       >
                         Decline
                       </Button>

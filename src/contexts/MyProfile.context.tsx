@@ -8,6 +8,7 @@ import {useError} from "./Error.context";
 import {useUsers} from "./Users.context";
 import subscribeApi from "../apis/subscribe.api";
 import unsubscribeApi from "../apis/unsubscribe.api";
+import updateUsernameApi from "../apis/updateUsername.api";
 
 export const myProfileReducer = (state: MyProfileState, action: MyProfileAction): MyProfileState => {
   switch (action.type) {
@@ -61,6 +62,14 @@ export const myProfileReducer = (state: MyProfileState, action: MyProfileAction)
         ...state,
         isFetching: action.payload,
       };
+    case "setUsername":
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          username: action.payload,
+        },
+      };
     default:
       return state;
   }
@@ -80,6 +89,7 @@ export type MyProfileActionsMap = {
   setIsSubscribing: string;
   setIsUnsubscribing: string;
   setIsFetching: boolean;
+  setUsername: string;
 };
 
 export type MyProfileAction = {
@@ -190,10 +200,26 @@ export const useMyProfile = () => {
     }
   }, [decreaseSubscribers, dispatch, getIdTokenClaims, isAuthenticated]);
 
+  const updateUsername = useCallback(async (username: string) => {
+    if (isAuthenticated) {
+      dispatch("setIsFetching", true);
+      const accessToken = (await getIdTokenClaims())!!.__raw;
+      const response = await updateUsernameApi(accessToken, username);
+      if (response.statusCode === 200) {
+        dispatch('setUsername', username);
+      }
+      else {
+        setError(response.statusCode, (response as ErrorResponse).message);
+      }
+      dispatch("setIsFetching", false);
+    }
+  }, [dispatch, getIdTokenClaims, isAuthenticated, setError]);
+  
   return {
     myProfile,
     fetchMyProfile,
     subscribeChannel,
     unsubscribeChannel,
+    updateUsername,
   };
 };
