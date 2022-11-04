@@ -59,7 +59,7 @@ export const useError = () => {
       statusCode,
       message,
     });
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [dispatch]);
 
   return {
     error,

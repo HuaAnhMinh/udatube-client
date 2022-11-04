@@ -70,6 +70,16 @@ export const myProfileReducer = (state: MyProfileState, action: MyProfileAction)
           username: action.payload,
         },
       };
+    case "setNewUsername":
+      return {
+        ...state,
+        newUsername: action.payload,
+      };
+    case "setError":
+      return {
+        ...state,
+        error: action.payload,
+      };
     default:
       return state;
   }
@@ -80,6 +90,8 @@ export type MyProfileState = {
   isSubscribing: string[];
   isUnsubscribing: string[];
   isFetching: boolean;
+  newUsername: string;
+  error: string | null | undefined;
 };
 
 export type MyProfileActionsMap = {
@@ -90,6 +102,8 @@ export type MyProfileActionsMap = {
   setIsUnsubscribing: string;
   setIsFetching: boolean;
   setUsername: string;
+  setNewUsername: string;
+  setError: string;
 };
 
 export type MyProfileAction = {
@@ -117,6 +131,8 @@ const initialState: MyProfileState = {
   isSubscribing: [],
   isUnsubscribing: [],
   isFetching: false,
+  newUsername: '',
+  error: null,
 };
 
 export const MyProfileContext = createContext<MyProfileContextInterface>([initialState, () => {}]);
@@ -156,6 +172,7 @@ export const useMyProfile = () => {
       let response = await getMyProfileApi(accessToken);
       if (response.statusCode === 200) {
         dispatch('setMyProfile', (response as SuccessResponse).data.user);
+        dispatch('setNewUsername', (response as SuccessResponse).data.user.username);
       }
       else if (response.statusCode === 404) {
         response = await registerApi(accessToken);
@@ -164,7 +181,7 @@ export const useMyProfile = () => {
         }
       }
       else {
-        setError(response.statusCode, (response as ErrorResponse).message);
+        setError(500, 'Internal Server Error');
       }
       dispatch("setIsFetching", false);
     }
@@ -200,26 +217,35 @@ export const useMyProfile = () => {
     }
   }, [decreaseSubscribers, dispatch, getIdTokenClaims, isAuthenticated]);
 
-  const updateUsername = useCallback(async (username: string) => {
-    if (isAuthenticated) {
+  const updateUsernameToDB = useCallback(async () => {
+    dispatch('setError', '');
+    if (!myProfile.newUsername.trim()) {
+      return dispatch('setError', 'Username cannot be empty');
+    }
+    if (isAuthenticated && myProfile.newUsername.trim() && myProfile.newUsername !== myProfile.user.username) {
       dispatch("setIsFetching", true);
       const accessToken = (await getIdTokenClaims())!!.__raw;
-      const response = await updateUsernameApi(accessToken, username);
+      const response = await updateUsernameApi(accessToken, myProfile.newUsername.trim());
       if (response.statusCode === 200) {
-        dispatch('setUsername', username);
+        dispatch('setUsername', myProfile.newUsername.trim());
       }
       else {
         setError(response.statusCode, (response as ErrorResponse).message);
       }
       dispatch("setIsFetching", false);
     }
-  }, [dispatch, getIdTokenClaims, isAuthenticated, setError]);
+  }, [dispatch, getIdTokenClaims, isAuthenticated, myProfile.newUsername, myProfile.user.username, setError]);
+
+  const changeUsername = useCallback((newUsername: string) => {
+    dispatch('setNewUsername', newUsername);
+  }, [dispatch]);
   
   return {
     myProfile,
     fetchMyProfile,
     subscribeChannel,
     unsubscribeChannel,
-    updateUsername,
+    updateUsernameToDB,
+    changeUsername,
   };
 };

@@ -4,13 +4,16 @@ import './index.scss';
 import App from './components/App';
 import reportWebVitals from './reportWebVitals';
 import {ErrorProvider} from "./contexts/Error.context";
+import {NetworkProvider} from "./contexts/Network.context";
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   <ErrorProvider>
-    <App />
+    <NetworkProvider>
+      <App />
+    </NetworkProvider>
   </ErrorProvider>
 );
 

@@ -1,4 +1,4 @@
-import {ReactNode, useEffect, useState} from "react";
+import {ReactNode} from "react";
 import './Body.scss';
 import useWindowDimensions from "../../utils/useWindowDimensions.config";
 import {useError} from "../../contexts/Error.context";
@@ -9,28 +9,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 const Body = ({ children }: { children: ReactNode }) => {
   const { width } = useWindowDimensions();
   const { error, setError } = useError();
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
   const { isLoading } = useAuth0();
-
-  useEffect(() => {
-    const handleStatusChange = () => {
-      setIsOnline(navigator.onLine);
-    };
-
-    window.addEventListener('online', handleStatusChange);
-    window.addEventListener('offline', handleStatusChange);
-
-    return () => {
-      window.removeEventListener('online', handleStatusChange);
-      window.removeEventListener('offline', handleStatusChange);
-    };
-  }, [isOnline]);
-  
-  useEffect(() => {
-    if (!isOnline) {
-      setError(0, 'You are offline');
-    }
-  }, [isOnline, setError]);
 
   if (width >= 900) {
     return (
@@ -47,7 +26,7 @@ const Body = ({ children }: { children: ReactNode }) => {
         }
         { !isLoading && children }
         {
-          error.message === 'You are offline' &&
+          error.statusCode !== 500 && error.message &&
           <Snackbar
             open={!!error.message}
             onClose={() => setError(0, '')}
@@ -72,7 +51,7 @@ const Body = ({ children }: { children: ReactNode }) => {
       }
       { !isLoading && children }
       {
-        error.message === 'You are offline' &&
+        error.statusCode !== 500 && error.message &&
         <Snackbar
           open={!!error.message}
           onClose={() => setError(0, '')}

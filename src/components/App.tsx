@@ -13,11 +13,13 @@ import Users from "./Users/Users";
 import {UsersProvider} from "../contexts/Users.context";
 import Body from "./Body/Body";
 import {UserProvider} from "../contexts/User.context";
+import {useNetwork} from "../contexts/Network.context";
 
 function App() {
   const { error } = useError();
+  useNetwork();
 
-  if (error.message) {
+  if (error.statusCode === 500) {
     return (
       <Page500 />
     );

@@ -13,19 +13,14 @@ const Profile = () => {
   const location = useLocation();
   const { width } = useWindowDimensions();
   const { user, fetchUser } = useUser();
-  const { myProfile, updateUsername } = useMyProfile();
+  const { myProfile, updateUsernameToDB, changeUsername } = useMyProfile();
   const [openEditUsername, setOpenEditUsername] = useState(false);
-  const [username, setUsername] = useState('');
 
   useEffect(() => {
     if (location.pathname.split('/')[2] !== 'me') {
       void fetchUser(location.pathname.split('/')[2]);
     }
   }, [fetchUser, location.pathname]);
-
-  useEffect(() => {
-    setUsername(myProfile.user.username);
-  }, [myProfile.user.username]);
 
   if (user.isFailed) {
     return <Page404 />
@@ -37,6 +32,10 @@ const Profile = () => {
         <Grid item xs={12} lg={6}>
           <Grid container direction={"column"} justifyContent={"center"} alignItems={"center"}>
             <Grid item>
+              {
+                location.pathname.split('/')[2] === 'me' && myProfile.error &&
+                <Typography variant={"h6"} color={"error"}>{myProfile.error}</Typography>
+              }
               {
                 ((location.pathname.split('/')[2] === 'me' && !myProfile.user.id) ||
                   (location.pathname.split('/')[2] !== 'me' && user.isFetching)) &&
@@ -91,7 +90,7 @@ const Profile = () => {
                 />
               }
               {
-                ((location.pathname.split('/')[2] === 'me' && myProfile.user.id) ||
+                ((location.pathname.split('/')[2] === 'me' && myProfile.user.id && !myProfile.isFetching) ||
                   (location.pathname.split('/')[2] !== 'me' && !user.isFetching)) && !openEditUsername &&
                 <Typography
                   component={"h1"}
@@ -105,11 +104,16 @@ const Profile = () => {
                       <IconButton
                         sx={{ pt: '4px' }}
                         onClick={() => setOpenEditUsername(true)}
+                        disabled={myProfile.isFetching}
                       >
                         <EditIcon/>
                       </IconButton></>
                   }
                 </Typography>
+              }
+              {
+                location.pathname.split('/')[2] === 'me' && myProfile.user.id && myProfile.isFetching &&
+                <CircularProgress color={"error"} sx={{ fontSize: '20px', mt: '15px' }} />
               }
               {
                 location.pathname.split('/')[2] === 'me' && myProfile.user.id && openEditUsername &&
@@ -119,8 +123,8 @@ const Profile = () => {
                       <TextField
                         fullWidth
                         variant={"outlined"}
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        value={myProfile.newUsername}
+                        onChange={(e) => changeUsername(e.target.value)}
                       />
                     </Grid>
                     <Grid item sx={{ mt: '5px', p: '0 5px' }} xs={6} md={5}>
@@ -129,12 +133,12 @@ const Profile = () => {
                         color={"error"}
                         fullWidth
                         onClick={() => {
-                          void updateUsername(username);
+                          void updateUsernameToDB();
                           setOpenEditUsername(false);
                         }}
                         disabled={myProfile.isFetching}
                       >
-                        { myProfile.isFetching ? <CircularProgress color={'error'} size={20} /> : 'Accept' }
+                        Accept
                       </Button>
                     </Grid>
                     <Grid item sx={{ mt: '5px', p: '0 5px' }} xs={6} md={5}>
