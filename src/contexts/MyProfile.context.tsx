@@ -9,6 +9,9 @@ import {useUsers} from "./Users.context";
 import subscribeApi from "../apis/subscribe.api";
 import unsubscribeApi from "../apis/unsubscribe.api";
 import updateUsernameApi from "../apis/updateUsername.api";
+import {useNetwork} from "./Network.context";
+import getLinkToUploadAvatarApi from "../apis/getLinkToUploadAvatar.api";
+import updateAvatarApi from "../apis/updateAvatar.api";
 
 export const myProfileReducer = (state: MyProfileState, action: MyProfileAction): MyProfileState => {
   switch (action.type) {
@@ -80,6 +83,16 @@ export const myProfileReducer = (state: MyProfileState, action: MyProfileAction)
         ...state,
         error: action.payload,
       };
+    case "setCacheTimestamp":
+      return {
+        ...state,
+        cacheTimestamp: action.payload,
+      };
+    case "setIsUploadingAvatar":
+      return {
+        ...state,
+        isUploadingAvatar: action.payload,
+      };
     default:
       return state;
   }
@@ -92,6 +105,8 @@ export type MyProfileState = {
   isFetching: boolean;
   newUsername: string;
   error: string | null | undefined;
+  cacheTimestamp: number;
+  isUploadingAvatar: boolean;
 };
 
 export type MyProfileActionsMap = {
@@ -104,6 +119,8 @@ export type MyProfileActionsMap = {
   setUsername: string;
   setNewUsername: string;
   setError: string;
+  setCacheTimestamp: number;
+  setIsUploadingAvatar: boolean;
 };
 
 export type MyProfileAction = {
@@ -133,6 +150,8 @@ const initialState: MyProfileState = {
   isFetching: false,
   newUsername: '',
   error: null,
+  cacheTimestamp: 0,
+  isUploadingAvatar: false,
 };
 
 export const MyProfileContext = createContext<MyProfileContextInterface>([initialState, () => {}]);
@@ -153,6 +172,8 @@ export const MyProfileProvider = ({ children }: { children: ReactNode }) => {
 
 export const useMyProfile = () => {
   const [myProfile, dispatch] = useContext(MyProfileContext);
+  const { network } = useNetwork();
+
   const {
     isAuthenticated,
     getIdTokenClaims,
@@ -188,7 +209,7 @@ export const useMyProfile = () => {
   }, [dispatch, getIdTokenClaims, isAuthenticated, setError]);
   
   const subscribeChannel = useCallback(async (userId: string) => {
-    if (isAuthenticated) {
+    if (isAuthenticated && network.isOnline) {
       dispatch('setIsSubscribing', userId);
       const accessToken = (await getIdTokenClaims())!!.__raw;
       const result = await subscribeApi(accessToken, userId);
@@ -200,10 +221,10 @@ export const useMyProfile = () => {
         dispatch('setIsSubscribing', '');
       }
     }
-  }, [dispatch, getIdTokenClaims, increaseSubscribers, isAuthenticated]);
+  }, [dispatch, getIdTokenClaims, increaseSubscribers, isAuthenticated, network.isOnline]);
 
   const unsubscribeChannel = useCallback(async (userId: string) => {
-    if (isAuthenticated) {
+    if (isAuthenticated && network.isOnline) {
       dispatch('setIsUnsubscribing', userId);
       const accessToken = (await getIdTokenClaims())!!.__raw;
       const result = await unsubscribeApi(accessToken, userId);
@@ -215,14 +236,14 @@ export const useMyProfile = () => {
         dispatch('setIsUnsubscribing', '');
       }
     }
-  }, [decreaseSubscribers, dispatch, getIdTokenClaims, isAuthenticated]);
+  }, [decreaseSubscribers, dispatch, getIdTokenClaims, isAuthenticated, network.isOnline]);
 
   const updateUsernameToDB = useCallback(async () => {
     dispatch('setError', '');
     if (!myProfile.newUsername.trim()) {
       return dispatch('setError', 'Username cannot be empty');
     }
-    if (isAuthenticated && myProfile.newUsername.trim() && myProfile.newUsername !== myProfile.user.username) {
+    if (isAuthenticated && network.isOnline && myProfile.newUsername.trim() && myProfile.newUsername !== myProfile.user.username) {
       dispatch("setIsFetching", true);
       const accessToken = (await getIdTokenClaims())!!.__raw;
       const response = await updateUsernameApi(accessToken, myProfile.newUsername.trim());
@@ -234,11 +255,30 @@ export const useMyProfile = () => {
       }
       dispatch("setIsFetching", false);
     }
-  }, [dispatch, getIdTokenClaims, isAuthenticated, myProfile.newUsername, myProfile.user.username, setError]);
+  }, [dispatch, getIdTokenClaims, isAuthenticated, myProfile.newUsername, myProfile.user.username, network.isOnline, setError]);
 
   const changeUsername = useCallback((newUsername: string) => {
     dispatch('setNewUsername', newUsername);
   }, [dispatch]);
+
+  const changeAvatar = useCallback(async (image: File) => {
+    if (isAuthenticated && network.isOnline) {
+      dispatch("setIsUploadingAvatar", true);
+      const accessToken = (await getIdTokenClaims())!!.__raw;
+      let response = await getLinkToUploadAvatarApi(accessToken);
+      if (response.statusCode === 200) {
+        const presignedUrl = (response as SuccessResponse).data.url;
+        response = await updateAvatarApi(presignedUrl, image);
+        if (response.statusCode === 200) {
+          dispatch("setCacheTimestamp", Date.now());
+        }
+      }
+      else {
+        setError(response.statusCode, (response as ErrorResponse).message);
+      }
+      dispatch("setIsUploadingAvatar", false);
+    }
+  }, [dispatch, getIdTokenClaims, isAuthenticated, network.isOnline, setError]);
   
   return {
     myProfile,
@@ -247,5 +287,6 @@ export const useMyProfile = () => {
     unsubscribeChannel,
     updateUsernameToDB,
     changeUsername,
+    changeAvatar,
   };
 };

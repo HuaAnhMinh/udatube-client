@@ -3,6 +3,7 @@ import {createContext, ReactNode, useCallback, useContext, useReducer} from "rea
 import getUserApi from "../apis/getUser.api";
 import {useAuth0} from "@auth0/auth0-react";
 import {SuccessResponse} from "../utils/response.util";
+import {useNetwork} from "./Network.context";
 
 export const userReducer = (state: UserState, action: UserAction) => {
   switch (action.type) {
@@ -83,13 +84,15 @@ export const UserProvider = ({children}: {children: ReactNode}) => {
 export const useUser = () => {
   const [user, dispatch] = useContext(UserContext);
 
+  const { network } = useNetwork();
+
   const {
     isAuthenticated,
     getIdTokenClaims,
   } = useAuth0();
   
   const fetchUser = useCallback(async (id: string) => {
-    if (isAuthenticated) {
+    if (isAuthenticated && network.isOnline) {
       dispatch("setFailed", false);
       dispatch("setIsFetching", true);
       const accessToken = (await getIdTokenClaims())!!.__raw;
@@ -102,7 +105,7 @@ export const useUser = () => {
       }
       dispatch("setIsFetching", false);
     }
-  }, [dispatch, getIdTokenClaims, isAuthenticated]);
+  }, [dispatch, getIdTokenClaims, isAuthenticated, network.isOnline]);
   
   return {
     fetchUser,

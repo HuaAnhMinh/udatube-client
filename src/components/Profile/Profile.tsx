@@ -13,7 +13,7 @@ const Profile = () => {
   const location = useLocation();
   const { width } = useWindowDimensions();
   const { user, fetchUser } = useUser();
-  const { myProfile, updateUsernameToDB, changeUsername } = useMyProfile();
+  const { myProfile, updateUsernameToDB, changeUsername, changeAvatar } = useMyProfile();
   const [openEditUsername, setOpenEditUsername] = useState(false);
 
   useEffect(() => {
@@ -62,19 +62,27 @@ const Profile = () => {
                 />
               }
               {
-                location.pathname.split('/')[2] === 'me' && myProfile.user.id &&
+                location.pathname.split('/')[2] === 'me' && myProfile.user.id && !myProfile.isUploadingAvatar &&
                 <IconButton component={"label"}>
                   <input
                     type={"file"}
                     accept=".png"
                     hidden
+                    onChange={(e) => {
+                      console.log(e.target.files);
+                      void changeAvatar(e.target.files!![0]);
+                    }}
                   />
                   <Avatar
                     alt={myProfile.user.username}
-                    src={`https://udatube-avatars-dev.s3.amazonaws.com/${myProfile.user.id}.png`}
+                    src={`https://udatube-avatars-dev.s3.amazonaws.com/${myProfile.user.id}.png?${myProfile.cacheTimestamp}`}
                     sx={width <= 900 ? { width: 150, height: 150 } : { width: 200, height: 200 }}
                   />
                 </IconButton>
+              }
+              {
+                location.pathname.split('/')[2] === 'me' && myProfile.user.id && myProfile.isUploadingAvatar &&
+                <CircularProgress color={'error'} size={150} />
               }
             </Grid>
             <Grid item width="100%" style={{ textAlign: 'center' }}>
@@ -100,14 +108,13 @@ const Profile = () => {
                   {location.pathname.split('/')[2] === 'me' ? myProfile.user.username : user.user.username}
                   {
                     location.pathname.split('/')[2] === 'me' &&
-                    <>&nbsp;
-                      <IconButton
-                        sx={{ pt: '4px' }}
-                        onClick={() => setOpenEditUsername(true)}
-                        disabled={myProfile.isFetching}
-                      >
-                        <EditIcon/>
-                      </IconButton></>
+                    <IconButton
+                      sx={{ ml: '6px', position: 'absolute' }}
+                      onClick={() => setOpenEditUsername(true)}
+                      disabled={myProfile.isFetching}
+                    >
+                      <EditIcon/>
+                    </IconButton>
                   }
                 </Typography>
               }

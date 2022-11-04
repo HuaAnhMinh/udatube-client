@@ -9,6 +9,7 @@ const endpoints = {
   unsubscribe: (userId: string) => `${host}/users/${userId}/unsubscribe`,
   getUser: (userId: string) => `${host}/users/${userId}`,
   updateUsername: () => `${host}/users/me`,
+  updateAvatar: () => `${host}/users/me/avatar`,
 };
 
 export default endpoints;

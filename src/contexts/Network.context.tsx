@@ -57,13 +57,11 @@ export const NetworkProvider = ({ children }: { children: ReactNode }) => {
 
 export const useNetwork = () => {
   const [network, dispatch] = useContext(NetworkContext);
-  console.log(network);
   
   const { setError } = useError();
 
   useEffect(() => {
     const handleStatusChange = () => {
-      console.log(navigator.onLine);
       dispatch('setIsOnline', navigator.onLine);
     };
 
@@ -81,4 +79,8 @@ export const useNetwork = () => {
       setError(503, 'Service Unavailable');
     }
   }, [network.isOnline, setError]);
+
+  return {
+    network,
+  };
 };

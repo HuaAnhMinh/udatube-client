@@ -2,6 +2,7 @@ import {ShortFormUser} from "../@types/user";
 import {createContext, ReactNode, useCallback, useContext, useReducer} from "react";
 import getUsersApi from "../apis/getUsers.api";
 import { SuccessResponse } from "../utils/response.util";
+import {useNetwork} from "./Network.context";
 
 export const usersReducer = (state: UsersState, action: UsersAction) => {
   switch (action.type) {
@@ -102,32 +103,36 @@ export const UsersProvider = ({ children }: { children: ReactNode }) => {
 
 export const useUsers = () => {
   const [users, dispatch] = useContext(UsersContext);
+  
+  const { network } = useNetwork();
 
   const fetchUsers = useCallback(async (username: string, fetchFromStart: boolean = true) => {
-    let actionType: 'setUsers' | 'addUsers';
-    if (fetchFromStart) {
-      actionType = 'setUsers';
+    if (network.isOnline) {
+      let actionType: 'setUsers' | 'addUsers';
+      if (fetchFromStart) {
+        actionType = 'setUsers';
+        dispatch(actionType, {
+          users: [],
+          nextKey: null,
+          isFetching: false,
+        });
+      }
+      else {
+        actionType = 'addUsers';
+      }
+
+      dispatch('setIsFetching', {});
+
+      const response = await getUsersApi(username, 8, users.nextKey);
+      const data = (response as SuccessResponse).data;
+
       dispatch(actionType, {
-        users: [],
-        nextKey: null,
+        users: data.users,
+        nextKey: data.nextKey,
         isFetching: false,
-      });
+      }); 
     }
-    else {
-      actionType = 'addUsers';
-    }
-
-    dispatch('setIsFetching', {});
-
-    const response = await getUsersApi(username, 8, users.nextKey);
-    const data = (response as SuccessResponse).data;
-
-    dispatch(actionType, {
-      users: data.users,
-      nextKey: data.nextKey,
-      isFetching: false,
-    });
-  }, [users, dispatch]);
+  }, [network.isOnline, dispatch, users.nextKey]);
 
   const increaseSubscribers = useCallback((userId: string) => {
     dispatch('increaseSubscribers', userId);

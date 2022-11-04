@@ -40,7 +40,7 @@ const AvatarButton = () => {
             aria-expanded={open ? 'true' : undefined}
             onClick={handleClick}
           >
-            <Avatar alt={myProfile.user.username} src={`https://udatube-avatars-dev.s3.amazonaws.com/${myProfile.user.id}.png`} />
+            <Avatar alt={myProfile.user.username} src={`https://udatube-avatars-dev.s3.amazonaws.com/${myProfile.user.id}.png?${myProfile.cacheTimestamp}`} />
           </IconButton>
           <Menu
             anchorEl={anchorEl}
