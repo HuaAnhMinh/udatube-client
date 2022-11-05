@@ -2,6 +2,8 @@ import {useAuth0} from "@auth0/auth0-react";
 import {Avatar, IconButton, ListItem, ListItemButton, Menu, MenuItem} from "@mui/material";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
+import PeopleIcon from '@mui/icons-material/People';
+import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
 import {useState, MouseEvent, useEffect} from "react";
 import {Link} from "react-router-dom";
 import {useMyProfile} from "../../contexts/MyProfile.context";
@@ -47,8 +49,22 @@ const AvatarButton = () => {
             open={open}
             onClose={handleClose}
           >
-            <Link className={'Link'} to={"/users/me"}><MenuItem><AccountCircleIcon /> &nbsp; My profile</MenuItem></Link>
-            <MenuItem onClick={() => logout({ returnTo: window.location.origin })}>
+            <Link className={'Link'} to={"/users/me"}>
+              <MenuItem sx={{ pt: '10px', pb: '10px' }}>
+                <AccountCircleIcon /> &nbsp; My profile
+              </MenuItem>
+            </Link>
+            <Link className={'Link'} to={"/subscribe-channels"}>
+              <MenuItem sx={{ pt: '10px', pb: '10px' }}>
+                <PeopleIcon /> &nbsp; My subscribe channels
+              </MenuItem>
+            </Link>
+            <Link className={'Link'} to={"/my-videos"}>
+              <MenuItem sx={{ pt: '10px', pb: '10px' }}>
+                <VideoLibraryIcon /> &nbsp; My videos
+              </MenuItem>
+            </Link>
+            <MenuItem sx={{ pt: '10px', pb: '10px' }} onClick={() => logout({ returnTo: window.location.origin })}>
               <LogoutIcon /> &nbsp; Logout
             </MenuItem>
           </Menu>
@@ -62,6 +78,20 @@ const AvatarButton = () => {
           <ListItem>
             <ListItemButton sx={{ pl: '0px' }}>
               <AccountCircleIcon /> &nbsp; My profile
+            </ListItemButton>
+          </ListItem>
+        </Link>
+        <Link className={'Link'} to={"/subscribe-channels"}>
+          <ListItem>
+            <ListItemButton sx={{ pl: '0px' }}>
+              <PeopleIcon /> &nbsp; My subscribe channels
+            </ListItemButton>
+          </ListItem>
+        </Link>
+        <Link className={'Link'} to={"/my-videos"}>
+          <ListItem>
+            <ListItemButton sx={{ pl: '0px' }}>
+              <VideoLibraryIcon /> &nbsp; My videos
             </ListItemButton>
           </ListItem>
         </Link>
