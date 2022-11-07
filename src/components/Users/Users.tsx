@@ -35,7 +35,9 @@ const Users = () => {
           <Grid container spacing={4} alignItems={'center'} sx={{ padding: '2px' }}>
             {
               users.users.map((user) => (
-                <UserCard key={user.id} user={user} />
+                <Grid key={user.id} item xs={12} md={6} xl={4} sx={{ padding: '2px' }}>
+                  <UserCard user={user} hasBoxShadow />
+                </Grid>
               ))
             }
           </Grid>

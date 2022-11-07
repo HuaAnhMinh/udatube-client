@@ -280,6 +280,10 @@ export const useMyProfile = () => {
     }
   }, [dispatch, getIdTokenClaims, isAuthenticated, network.isOnline, setError]);
   
+  const fetchSubscribedChannels = useCallback(async () => {
+
+  }, []);
+
   return {
     myProfile,
     fetchMyProfile,
@@ -288,5 +292,6 @@ export const useMyProfile = () => {
     updateUsernameToDB,
     changeUsername,
     changeAvatar,
+    fetchSubscribedChannels,
   };
 };

@@ -15,6 +15,7 @@ import Body from "./Body/Body";
 import {UserProvider} from "../contexts/User.context";
 import {useNetwork} from "../contexts/Network.context";
 import Subscription from "./Subscription/Subscription";
+import {SizeProvider} from "../contexts/Size.context";
 
 function App() {
   const { error } = useError();
@@ -32,17 +33,19 @@ function App() {
         <MyProfileProvider>
           <UsersProvider>
             <UserProvider>
-              <Header />
-              <Body>
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/users" element={<Users />} />
-                  <Route path="/users/me" element={<ProtectedRoute component={Profile} />} />
-                  <Route path="/users/:id" element={<ProtectedRoute component={Profile} />} />
-                  <Route path="/subscribe-channels" element={<ProtectedRoute component={Subscription} />} />
-                  <Route path="*" element={<Page404 />} />
-                </Routes>
-              </Body>
+              <SizeProvider>
+                <Header />
+                <Body>
+                  <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/users" element={<Users />} />
+                    <Route path="/users/me" element={<ProtectedRoute component={Profile} />} />
+                    <Route path="/users/:id" element={<ProtectedRoute component={Profile} />} />
+                    <Route path="/subscribe-channels" element={<ProtectedRoute component={Subscription} />} />
+                    <Route path="*" element={<Page404 />} />
+                  </Routes>
+                </Body>
+              </SizeProvider>
             </UserProvider>
           </UsersProvider>
         </MyProfileProvider>
