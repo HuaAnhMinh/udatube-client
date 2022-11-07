@@ -1,4 +1,4 @@
-import {User} from "../@types/user";
+import {ShortFormUser, User} from "../@types/user";
 import {createContext, ReactNode, useCallback, useContext, useReducer} from "react";
 import getUserApi from "../apis/getUser.api";
 import {useAuth0} from "@auth0/auth0-react";
@@ -22,6 +22,32 @@ export const userReducer = (state: UserState, action: UserAction) => {
         ...state,
         isFetching: action.payload,
       };
+    case "increaseSubscribers":
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          totalSubscribers: state.user.totalSubscribers + 1,
+        },
+      };
+    case "decreaseSubscribers":
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          totalSubscribers: state.user.totalSubscribers - 1,
+        },
+      };
+    case "setSubscribedChannels":
+      return {
+        ...state,
+        subscribedChannels: action.payload,
+      };
+    case "setIsFetchingSubscribedChannels":
+      return {
+        ...state,
+        isFetchingSubscribedChannels: action.payload,
+      };
     default:
       return state;
   }
@@ -31,12 +57,18 @@ export type UserState = {
   user: User;
   isFailed: boolean;
   isFetching: boolean;
+  subscribedChannels: ShortFormUser[];
+  isFetchingSubscribedChannels: boolean;
 };
 
 export type UserActionsMap = {
   setUser: User;
   setFailed: boolean;
   setIsFetching: boolean;
+  increaseSubscribers: any;
+  decreaseSubscribers: any;
+  setSubscribedChannels: ShortFormUser[];
+  setIsFetchingSubscribedChannels: boolean;
 };
 
 export type UserAction = {
@@ -63,6 +95,8 @@ const initialState: UserState = {
   },
   isFailed: false,
   isFetching: false,
+  subscribedChannels: [],
+  isFetchingSubscribedChannels: false,
 };
 
 export const UserContext = createContext<UserContextInterface>([initialState, () => {}]);
@@ -107,8 +141,31 @@ export const useUser = () => {
     }
   }, [dispatch, getIdTokenClaims, isAuthenticated, network.isOnline]);
   
+  const increaseSubscribers = useCallback(() => {
+    dispatch("increaseSubscribers", {});
+  }, [dispatch]);
+
+  const decreaseSubscribers = useCallback(() => {
+    dispatch("decreaseSubscribers", {});
+  }, [dispatch]);
+
+  const fetchUserSubscribedChannels = useCallback(async () => {
+    if (isAuthenticated && network.isOnline && user.user.id) {
+      dispatch("setIsFetchingSubscribedChannels", true);
+      const accessToken = (await getIdTokenClaims())!!.__raw;
+      const response = await getUserApi(accessToken, user.user.id);
+      if (response.statusCode === 200) {
+        dispatch("setSubscribedChannels", (response as SuccessResponse).data.users);
+      }
+      dispatch("setIsFetchingSubscribedChannels", false);
+    }
+  }, [dispatch, getIdTokenClaims, isAuthenticated, network.isOnline, user.user.id]);
+  
   return {
     fetchUser,
     user,
+    increaseSubscribers,
+    decreaseSubscribers,
+    fetchUserSubscribedChannels,
   }
 };

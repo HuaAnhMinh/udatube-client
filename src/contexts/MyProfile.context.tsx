@@ -1,4 +1,4 @@
-import {User} from "../@types/user";
+import {ShortFormUser, User} from "../@types/user";
 import {createContext, ReactNode, useCallback, useContext, useReducer} from "react";
 import getMyProfileApi from "../apis/getMyProfile.api";
 import {useAuth0} from "@auth0/auth0-react";
@@ -12,6 +12,8 @@ import updateUsernameApi from "../apis/updateUsername.api";
 import {useNetwork} from "./Network.context";
 import getLinkToUploadAvatarApi from "../apis/getLinkToUploadAvatar.api";
 import updateAvatarApi from "../apis/updateAvatar.api";
+import {useUser} from "./User.context";
+import getSubscribedChannelsApi from "../apis/getSubscribedChannels.api";
 
 export const myProfileReducer = (state: MyProfileState, action: MyProfileAction): MyProfileState => {
   switch (action.type) {
@@ -93,6 +95,16 @@ export const myProfileReducer = (state: MyProfileState, action: MyProfileAction)
         ...state,
         isUploadingAvatar: action.payload,
       };
+    case 'setSubscribedChannels':
+      return {
+        ...state,
+        subscribedChannels: action.payload,
+      };
+    case 'setIsFetchingSubscribedChannels':
+      return {
+        ...state,
+        isFetchingSubscribedChannels: action.payload,
+      };
     default:
       return state;
   }
@@ -107,6 +119,8 @@ export type MyProfileState = {
   error: string | null | undefined;
   cacheTimestamp: number;
   isUploadingAvatar: boolean;
+  subscribedChannels: ShortFormUser[];
+  isFetchingSubscribedChannels: boolean;
 };
 
 export type MyProfileActionsMap = {
@@ -121,6 +135,8 @@ export type MyProfileActionsMap = {
   setError: string;
   setCacheTimestamp: number;
   setIsUploadingAvatar: boolean;
+  setSubscribedChannels: ShortFormUser[];
+  setIsFetchingSubscribedChannels: boolean;
 };
 
 export type MyProfileAction = {
@@ -152,6 +168,8 @@ const initialState: MyProfileState = {
   error: null,
   cacheTimestamp: 0,
   isUploadingAvatar: false,
+  subscribedChannels: [],
+  isFetchingSubscribedChannels: false,
 };
 
 export const MyProfileContext = createContext<MyProfileContextInterface>([initialState, () => {}]);
@@ -183,6 +201,12 @@ export const useMyProfile = () => {
     increaseSubscribers,
     decreaseSubscribers,
   } = useUsers();
+  
+  const {
+    user,
+    increaseSubscribers: increaseSubscribersForUser,
+    decreaseSubscribers: decreaseSubscribersForUser,
+  } = useUser();
 
   const { setError } = useError();
   
@@ -216,12 +240,15 @@ export const useMyProfile = () => {
       if (result.statusCode === 200) {
         dispatch('subscribe', userId);
         increaseSubscribers(userId);
+        if (user.user.id === userId) {
+          increaseSubscribersForUser();
+        }
       }
       else {
         dispatch('setIsSubscribing', '');
       }
     }
-  }, [dispatch, getIdTokenClaims, increaseSubscribers, isAuthenticated, network.isOnline]);
+  }, [dispatch, getIdTokenClaims, increaseSubscribers, increaseSubscribersForUser, isAuthenticated, network.isOnline, user.user.id]);
 
   const unsubscribeChannel = useCallback(async (userId: string) => {
     if (isAuthenticated && network.isOnline) {
@@ -231,12 +258,15 @@ export const useMyProfile = () => {
       if (result.statusCode === 200) {
         dispatch('unsubscribe', userId);
         decreaseSubscribers(userId);
+        if (user.user.id === userId) {
+          decreaseSubscribersForUser();
+        }
       }
       else {
         dispatch('setIsUnsubscribing', '');
       }
     }
-  }, [decreaseSubscribers, dispatch, getIdTokenClaims, isAuthenticated, network.isOnline]);
+  }, [decreaseSubscribers, decreaseSubscribersForUser, dispatch, getIdTokenClaims, isAuthenticated, network.isOnline, user.user.id]);
 
   const updateUsernameToDB = useCallback(async () => {
     dispatch('setError', '');
@@ -280,9 +310,20 @@ export const useMyProfile = () => {
     }
   }, [dispatch, getIdTokenClaims, isAuthenticated, network.isOnline, setError]);
   
-  const fetchSubscribedChannels = useCallback(async () => {
-
-  }, []);
+  const fetchMineSubscribedChannels = useCallback(async () => {
+    if (isAuthenticated && network.isOnline) {
+      dispatch("setIsFetchingSubscribedChannels", true);
+      const accessToken = (await getIdTokenClaims())!!.__raw;
+      const response = await getSubscribedChannelsApi(accessToken, 'me');
+      if (response.statusCode === 200) {
+        dispatch("setSubscribedChannels", (response as SuccessResponse).data.users);
+      }
+      else {
+        setError(response.statusCode, (response as ErrorResponse).message);
+      }
+      dispatch("setIsFetchingSubscribedChannels", false);
+    }
+  }, [dispatch, getIdTokenClaims, isAuthenticated, network.isOnline, setError]);
 
   return {
     myProfile,
@@ -292,6 +333,6 @@ export const useMyProfile = () => {
     updateUsernameToDB,
     changeUsername,
     changeAvatar,
-    fetchSubscribedChannels,
+    fetchMineSubscribedChannels,
   };
 };

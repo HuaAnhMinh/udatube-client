@@ -10,6 +10,7 @@ const endpoints = {
   getUser: (userId: string) => `${host}/users/${userId}`,
   updateUsername: () => `${host}/users/me`,
   updateAvatar: () => `${host}/users/me/avatar`,
+  getSubscribedChannels: (userId: string) => `${host}/users/${userId}/subscribed-channels`,
 };
 
 export default endpoints;

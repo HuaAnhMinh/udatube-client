@@ -54,16 +54,6 @@ const AvatarButton = () => {
                 <AccountCircleIcon /> &nbsp; My profile
               </MenuItem>
             </Link>
-            <Link className={'Link'} to={"/subscribe-channels"}>
-              <MenuItem sx={{ pt: '10px', pb: '10px' }}>
-                <PeopleIcon /> &nbsp; My subscribe channels
-              </MenuItem>
-            </Link>
-            <Link className={'Link'} to={"/my-videos"}>
-              <MenuItem sx={{ pt: '10px', pb: '10px' }}>
-                <VideoLibraryIcon /> &nbsp; My videos
-              </MenuItem>
-            </Link>
             <MenuItem sx={{ pt: '10px', pb: '10px' }} onClick={() => logout({ returnTo: window.location.origin })}>
               <LogoutIcon /> &nbsp; Logout
             </MenuItem>
@@ -78,20 +68,6 @@ const AvatarButton = () => {
           <ListItem>
             <ListItemButton sx={{ pl: '0px' }}>
               <AccountCircleIcon /> &nbsp; My profile
-            </ListItemButton>
-          </ListItem>
-        </Link>
-        <Link className={'Link'} to={"/subscribe-channels"}>
-          <ListItem>
-            <ListItemButton sx={{ pl: '0px' }}>
-              <PeopleIcon /> &nbsp; My subscribe channels
-            </ListItemButton>
-          </ListItem>
-        </Link>
-        <Link className={'Link'} to={"/my-videos"}>
-          <ListItem>
-            <ListItemButton sx={{ pl: '0px' }}>
-              <VideoLibraryIcon /> &nbsp; My videos
             </ListItemButton>
           </ListItem>
         </Link>
