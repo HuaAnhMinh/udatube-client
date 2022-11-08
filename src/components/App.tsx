@@ -15,6 +15,7 @@ import Body from "./Body/Body";
 import {UserProvider} from "../contexts/User.context";
 import {useNetwork} from "../contexts/Network.context";
 import {SizeProvider} from "../contexts/Size.context";
+import CreateVideo from "./CreateVideo/CreateVideo";
 
 function App() {
   const { error } = useError();
@@ -40,6 +41,7 @@ function App() {
                     <Route path="/users" element={<Users />} />
                     <Route path="/users/me" element={<ProtectedRoute component={Profile} />} />
                     <Route path="/users/:id" element={<ProtectedRoute component={Profile} />} />
+                    <Route path="/create-video" element={<ProtectedRoute component={CreateVideo} />} />
                     <Route path="*" element={<Page404 />} />
                   </Routes>
                 </Body>

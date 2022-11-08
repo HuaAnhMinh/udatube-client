@@ -39,7 +39,7 @@ const MyProfileUsername = () => {
       }
       {
         openEditUsername &&
-        <TextField value={myProfile.newUsername} onChange={(e) => changeUsername(e.target.value)} fullWidth />
+        <TextField label={'Username'} value={myProfile.newUsername} onChange={(e) => changeUsername(e.target.value)} fullWidth />
       }
       {
         openEditUsername && !myProfile.isFetching &&

@@ -39,7 +39,7 @@ const AvatarButton = () => {
       return (
         <Grid container justifyContent={'flex-end'} alignItems={'center'} spacing={2}>
           <Grid item>
-            <IconButton onClick={() => navigate('/videos/new')}>
+            <IconButton onClick={() => navigate('/create-video')}>
               <VideoCallIcon fontSize={'large'} color={'error'} />
             </IconButton>
           </Grid>
@@ -80,7 +80,7 @@ const AvatarButton = () => {
             </ListItemButton>
           </ListItem>
         </Link>
-        <Link className={'Link'} to={'/videos/new'}>
+        <Link className={'Link'} to={'/create-video'}>
           <ListItem>
             <ListItemButton sx={{ pl: '0px' }}>
               <VideoCallIcon /> &nbsp; Create video
