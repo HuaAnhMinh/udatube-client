@@ -2,8 +2,6 @@ import {useAuth0} from "@auth0/auth0-react";
 import {Avatar, IconButton, ListItem, ListItemButton, Menu, MenuItem} from "@mui/material";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
-import PeopleIcon from '@mui/icons-material/People';
-import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
 import {useState, MouseEvent, useEffect} from "react";
 import {Link} from "react-router-dom";
 import {useMyProfile} from "../../contexts/MyProfile.context";

@@ -10,7 +10,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import {useMyProfile} from "../../contexts/MyProfile.context";
 import {useSize} from "../../contexts/Size.context";
 import UserCard from "../UserCard/UserCard";
-import InfiniteScroll from "react-infinite-scroll-component";
+import UserCardLoading from "../UserCardLoading/UserCardLoading";
 
 const Profile = () => {
   const location = useLocation();
@@ -105,8 +105,36 @@ const Profile = () => {
           <div
             hidden={profileTabValue !== 0}
           >
-            <Box sx={{ p: 3 }}>
-
+            <Box sx={{ p: 3, overflowY: 'auto' }} id={'list-subscribed-channels'}>
+              {
+                (myProfile.isFetchingSubscribedChannels || user.isFetchingSubscribedChannels) &&
+                <Grid container spacing={4} alignItems={'center'} sx={{ padding: '2px' }}>
+                  <UserCardLoading />
+                  <UserCardLoading />
+                  <UserCardLoading />
+                </Grid>
+              }
+              {
+                (!myProfile.isFetchingSubscribedChannels && !user.isFetchingSubscribedChannels) &&
+                <Grid container spacing={4} alignItems={'center'} sx={{ padding: '2px' }}>
+                  {
+                    location.pathname.split('/')[2] === 'me' &&
+                    myProfile.subscribedChannels.map((user) => (
+                      <Grid key={user.id} item xs={12} md={6} xl={4} sx={{ padding: '2px' }}>
+                        <UserCard user={user} hasBoxShadow />
+                      </Grid>
+                    ))
+                  }
+                  {
+                    location.pathname.split('/')[2] !== 'me' &&
+                    user.subscribedChannels.map((user) => (
+                      <Grid key={user.id} item xs={12} md={6} xl={4} sx={{ padding: '2px' }}>
+                        <UserCard user={user} hasBoxShadow />
+                      </Grid>
+                    ))
+                  }
+                </Grid>
+              }
             </Box>
           </div>
           <div
