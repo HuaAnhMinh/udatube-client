@@ -1,12 +1,15 @@
 import {Box, Button, Card, CardContent, Grid} from "@mui/material";
+import {useSize} from "../../contexts/Size.context";
 
 const UserCardLoading = () => {
+  const { size } = useSize();
+
   return (
     <Grid item xs={12} md={6} xl={4} sx={{ padding: '2px' }}>
       <Card sx={{ display: 'flex', padding: '20px', cursor: 'pointer', alignItems: 'center' }}>
         <Box sx={{
-          width: '150px',
-          height: '150px',
+          width: size.loadingSizeLarge,
+          height: size.loadingSizeLarge,
           borderRadius: '50%',
           backgroundImage: 'linear-gradient(to right, lightgrey , #eeeeee)'
         }} />

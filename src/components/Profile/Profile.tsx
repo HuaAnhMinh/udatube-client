@@ -71,7 +71,7 @@ const Profile = () => {
           />
         </div>
       }
-      <Grid container justifyContent={"flex-start"} alignItems={"center"} spacing={1}>
+      <Grid container justifyContent={"flex-start"} alignItems={"center"} spacing={1} sx={{ pb: '10px' }}>
         {
           location.pathname.split('/')[2] === 'me' && myProfile.user.id &&
           <ProfileAvatar />
@@ -104,8 +104,9 @@ const Profile = () => {
           </Box>
           <div
             hidden={profileTabValue !== 0}
+            style={{ paddingTop: '10px' }}
           >
-            <Box sx={{ p: 3, overflowY: 'auto' }} id={'list-subscribed-channels'}>
+            <Box sx={{ p: 1, overflowY: 'auto' }} id={'list-subscribed-channels'}>
               {
                 (myProfile.isFetchingSubscribedChannels || user.isFetchingSubscribedChannels) &&
                 <Grid container spacing={4} alignItems={'center'} sx={{ padding: '2px' }}>
