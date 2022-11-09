@@ -16,6 +16,7 @@ import {UserProvider} from "../contexts/User.context";
 import {useNetwork} from "../contexts/Network.context";
 import {SizeProvider} from "../contexts/Size.context";
 import CreateVideo from "./CreateVideo/CreateVideo";
+import {VideoProvider} from "../contexts/Video.context";
 
 function App() {
   const { error } = useError();
@@ -34,17 +35,19 @@ function App() {
           <UsersProvider>
             <UserProvider>
               <SizeProvider>
-                <Header />
-                <Body>
-                  <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/users" element={<Users />} />
-                    <Route path="/users/me" element={<ProtectedRoute component={Profile} />} />
-                    <Route path="/users/:id" element={<ProtectedRoute component={Profile} />} />
-                    <Route path="/create-video" element={<ProtectedRoute component={CreateVideo} />} />
-                    <Route path="*" element={<Page404 />} />
-                  </Routes>
-                </Body>
+                <VideoProvider>
+                  <Header />
+                  <Body>
+                    <Routes>
+                      <Route path="/" element={<Home />} />
+                      <Route path="/users" element={<Users />} />
+                      <Route path="/users/me" element={<ProtectedRoute component={Profile} />} />
+                      <Route path="/users/:id" element={<ProtectedRoute component={Profile} />} />
+                      <Route path="/create-video" element={<ProtectedRoute component={CreateVideo} />} />
+                      <Route path="*" element={<Page404 />} />
+                    </Routes>
+                  </Body>
+                </VideoProvider>
               </SizeProvider>
             </UserProvider>
           </UsersProvider>
