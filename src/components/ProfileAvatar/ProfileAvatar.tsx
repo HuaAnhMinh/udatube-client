@@ -1,4 +1,4 @@
-import {Avatar, Grid, IconButton} from "@mui/material";
+import {Avatar, Grid, IconButton, Tooltip} from "@mui/material";
 import CircularProgress from "@mui/material/CircularProgress";
 import {useLocation} from "react-router-dom";
 import {useMyProfile} from "../../contexts/MyProfile.context";
@@ -24,27 +24,29 @@ const ProfileAvatar = () => {
 
       { // avatar for my profile
         location.pathname.split('/')[2] === 'me' && !myProfile.isUploadingAvatar &&
-        <IconButton component={"label"}>
-          <input
-            type={"file"}
-            accept=".png"
-            hidden
-            onChange={(e) => {
-              console.log(e.target.files);
-              void changeAvatar(e.target.files!![0]);
-            }}
-          />
-          <Avatar
-            alt={myProfile.user.username}
-            src={`https://udatube-avatars-dev.s3.amazonaws.com/${myProfile.user.id}.png?${myProfile.cacheTimestamp}`}
-            sx={{ width: size.loadingSizeLarge, height: size.loadingSizeLarge }}
-          />
-        </IconButton>
+        <Tooltip title={"Click to change avatar, your avatar will be scaled to square"}>
+          <IconButton component={"label"}>
+            <input
+              type={"file"}
+              accept=".png"
+              hidden
+              onChange={(e) => {
+                console.log(e.target.files);
+                void changeAvatar(e.target.files!![0]);
+              }}
+            />
+            <Avatar
+              alt={myProfile.user.username}
+              src={`https://udatube-avatars-dev.s3.amazonaws.com/${myProfile.user.id}.png?${myProfile.cacheTimestamp}`}
+              sx={{ width: size.loadingSizeLarge, height: size.loadingSizeLarge }}
+            />
+          </IconButton>
+        </Tooltip>
       }
 
       { // loading icon when uploading new avatar
         location.pathname.split('/')[2] === 'me' && myProfile.isUploadingAvatar &&
-        <CircularProgress color={'error'} sx={{ width: size.loadingSizeLarge, height: size.loadingSizeLarge, pr: '5px' }} />
+        <CircularProgress color={'error'} sx={{ width: size.loadingSizeLarge, height: size.loadingSizeLarge }} />
       }
     </Grid>
   );

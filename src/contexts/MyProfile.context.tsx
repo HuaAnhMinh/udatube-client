@@ -218,6 +218,7 @@ export const useMyProfile = () => {
       if (response.statusCode === 200) {
         dispatch('setMyProfile', (response as SuccessResponse).data.user);
         dispatch('setNewUsername', (response as SuccessResponse).data.user.username);
+        dispatch('setCacheTimestamp', Date.now());
       }
       else if (response.statusCode === 404) {
         response = await registerApi(accessToken);
@@ -300,13 +301,16 @@ export const useMyProfile = () => {
         const presignedUrl = (response as SuccessResponse).data.url;
         response = await updateAvatarApi(presignedUrl, image);
         if (response.statusCode === 200) {
-          dispatch("setCacheTimestamp", Date.now());
+          setTimeout(() => {
+            dispatch("setCacheTimestamp", Date.now());
+            dispatch("setIsUploadingAvatar", false);
+          }, 5000);
         }
       }
       else {
         setError(response.statusCode, (response as ErrorResponse).message);
+        dispatch("setIsUploadingAvatar", false);
       }
-      dispatch("setIsUploadingAvatar", false);
     }
   }, [dispatch, getIdTokenClaims, isAuthenticated, network.isOnline, setError]);
   
