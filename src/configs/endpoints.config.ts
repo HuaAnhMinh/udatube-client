@@ -11,6 +11,7 @@ const endpoints = {
   updateUsername: () => `${host}/users/me`,
   updateAvatar: () => `${host}/users/me/avatar`,
   getSubscribedChannels: (userId: string) => `${host}/users/${userId}/subscribed-channels`,
+  getVideo: (videoId: string) => `${host}/videos/${videoId}`,
 };
 
 export default endpoints;

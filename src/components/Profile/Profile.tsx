@@ -38,16 +38,34 @@ const Profile = () => {
   }, [location.search]);
   
   useEffect(() => {
-    if (profileTabValue === 0 && location.pathname.split('/')[2] === 'me' && myProfile.user.id) {
+    if (profileTabValue === 0 &&
+      location.pathname.split('/')[2] === 'me' &&
+      myProfile.user.id &&
+      myProfile.subscribedChannels.length !== 0) {
       void fetchMineSubscribedChannels();
     }
-  }, [fetchMineSubscribedChannels, location.pathname, myProfile.user.id, profileTabValue]);
+  }, [
+    fetchMineSubscribedChannels,
+    location.pathname,
+    myProfile.subscribedChannels.length,
+    myProfile.user.id,
+    profileTabValue
+  ]);
 
   useEffect(() => {
-    if (profileTabValue === 0 && location.pathname.split('/')[2] !== 'me' && !user.isFetching) {
+    if (profileTabValue === 0 &&
+      location.pathname.split('/')[2] !== 'me' &&
+      !user.isFetching &&
+      user.user.subscribedChannels.length !== 0) {
       void fetchUserSubscribedChannels();
     }
-  }, [fetchUserSubscribedChannels, location.pathname, profileTabValue, user.isFetching]);
+  }, [
+    fetchUserSubscribedChannels,
+    location.pathname,
+    profileTabValue,
+    user.isFetching,
+    user.user.subscribedChannels.length
+  ]);
 
   if (user.isFailed) {
     return <Page404 />
@@ -106,9 +124,15 @@ const Profile = () => {
             hidden={profileTabValue !== 0}
             style={{ paddingTop: '10px' }}
           >
-            <Box sx={{ p: 1, overflowY: 'auto' }} id={'list-subscribed-channels'}>
+            <Box sx={{
+                p: 1,
+                overflowY: 'auto',
+              }}
+              id={'list-subscribed-channels'}
+            >
               {
-                (myProfile.isFetchingSubscribedChannels || user.isFetchingSubscribedChannels) &&
+                ((location.pathname.split('/')[2] === 'me' && myProfile.isFetchingSubscribedChannels) ||
+                  (location.pathname.split('/')[2] !== 'me' && user.isFetchingSubscribedChannels)) &&
                 <Grid container spacing={4} alignItems={'center'} sx={{ padding: '2px' }}>
                   <UserCardLoading />
                   <UserCardLoading />
@@ -116,7 +140,7 @@ const Profile = () => {
                 </Grid>
               }
               {
-                (!myProfile.isFetchingSubscribedChannels && !user.isFetchingSubscribedChannels) &&
+                !myProfile.isFetchingSubscribedChannels && !user.isFetchingSubscribedChannels &&
                 <Grid container spacing={4} alignItems={'center'} sx={{ padding: '2px' }}>
                   {
                     location.pathname.split('/')[2] === 'me' &&
@@ -136,13 +160,30 @@ const Profile = () => {
                   }
                 </Grid>
               }
+              {
+                ((location.pathname.split('/')[2] === 'me' &&
+                  myProfile.user.subscribedChannels.length === 0) ||
+                (location.pathname.split('/')[2] !== 'me' &&
+                  user.user.subscribedChannels.length === 0)) &&
+                <Typography style={{ textAlign: 'center', paddingTop: '35px' }} variant={'subtitle1'} color={"textSecondary"}>
+                  There are no subscribed channels
+                </Typography>
+              }
             </Box>
           </div>
           <div
             hidden={profileTabValue !== 1}
           >
-            <Box sx={{ p: 3 }}>
-              <Typography>Videos</Typography>
+            <Box sx={{ p: 1 }}>
+              {
+                ((location.pathname.split('/')[2] === 'me' &&
+                    myProfile.user.videos.length === 0) ||
+                  (location.pathname.split('/')[2] !== 'me' &&
+                    user.user.videos.length === 0)) &&
+                <Typography style={{ textAlign: 'center', paddingTop: '35px' }} variant={'subtitle1'} color={"textSecondary"}>
+                  There are no videos
+                </Typography>
+              }
             </Box>
           </div>
         </Box>

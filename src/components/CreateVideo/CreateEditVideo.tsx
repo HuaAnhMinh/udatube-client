@@ -5,12 +5,13 @@ import {useVideo} from "../../contexts/Video.context";
 import {useEffect, useState} from "react";
 import useWindowDimensions from "../../utils/useWindowDimensions.config";
 
-const CreateVideo = () => {
+const CreateEditVideo = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const {width} = useWindowDimensions();
   const {
     video,
+    getVideo,
     updateTitleLocal,
     updateDescriptionLocal,
     updateVideoFileLocal,
@@ -24,6 +25,11 @@ const CreateVideo = () => {
   useEffect(() => {
     clearVideoModifier();
   }, [clearVideoModifier]);
+
+  useEffect(() => {
+    const videoId = location.pathname.split('/')[2];
+    void getVideo(videoId);
+  }, [getVideo, location.pathname]);
 
   useEffect(() => {
     const imageWidth = document.getElementById("create-video-component-width")?.clientWidth;
@@ -142,4 +148,4 @@ const CreateVideo = () => {
   );
 };
 
-export default CreateVideo;
+export default CreateEditVideo;
