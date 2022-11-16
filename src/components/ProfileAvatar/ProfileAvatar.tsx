@@ -1,5 +1,4 @@
 import {Avatar, Grid, IconButton, Tooltip} from "@mui/material";
-import CircularProgress from "@mui/material/CircularProgress";
 import {useLocation} from "react-router-dom";
 import {useMyProfile} from "../../contexts/MyProfile.context";
 import {useUser} from "../../contexts/User.context";
@@ -46,7 +45,12 @@ const ProfileAvatar = () => {
 
       { // loading icon when uploading new avatar
         location.pathname.split('/')[2] === 'me' && myProfile.isUploadingAvatar &&
-        <CircularProgress color={'error'} sx={{ width: size.loadingSizeLarge, height: size.loadingSizeLarge }} />
+        <div style={{
+          width: size.loadingSizeLarge,
+          height: size.loadingSizeLarge,
+          borderRadius: '50%',
+          backgroundImage: 'linear-gradient(to right, lightgrey , #eeeeee)',
+        }} />
       }
     </Grid>
   );

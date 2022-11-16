@@ -27,6 +27,24 @@ export const videoReducer = (state: VideoState, action: VideoAction): VideoState
           videoFile: action.payload,
         }
       }
+    case "updateThumbnail":
+      return {
+        ...state,
+        videoModifier: {
+          ...state.videoModifier,
+          thumbnail: action.payload,
+        },
+      };
+    case "clearModifier":
+      return {
+        ...state,
+        videoModifier: {
+          title: "",
+          description: "",
+          videoFile: null,
+          thumbnail: null,
+        },
+      };
     default:
       return state;
   }
@@ -38,6 +56,7 @@ export type VideoState = {
     title: string;
     description?: string;
     videoFile: File | null;
+    thumbnail: File | null;
   };
 };
 
@@ -45,6 +64,8 @@ export type VideoActionsMap = {
   updateTitle: string;
   updateDescription: string;
   updateVideoFile: File;
+  updateThumbnail: File;
+  clearModifier: any;
 };
 
 export type VideoAction = {
@@ -67,6 +88,7 @@ const initialState: VideoState = {
     title: "",
     description: "",
     videoFile: null,
+    thumbnail: null,
   },
 };
 
@@ -101,10 +123,30 @@ export const useVideo = () => {
     dispatch("updateVideoFile", videoFile);
   }, [dispatch]);
 
+  const updateThumbnailLocal = useCallback((thumbnail: File) => {
+    dispatch("updateThumbnail", thumbnail);
+  }, [dispatch]);
+
+  const clearVideoModifier = useCallback(() => {
+    dispatch("clearModifier", undefined);
+  }, [dispatch]);
+
+  const createVideo = useCallback(async () => {
+
+  }, []);
+
+  const updateVideo = useCallback(async () => {
+
+  }, []);
+
   return {
     video,
     updateTitleLocal,
     updateDescriptionLocal,
     updateVideoFileLocal,
+    updateThumbnailLocal,
+    clearVideoModifier,
+    createVideo,
+    updateVideo,
   };
 };

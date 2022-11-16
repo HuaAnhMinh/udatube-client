@@ -1,11 +1,36 @@
 import {Button, Grid, TextField} from "@mui/material";
 import FileUploadIcon from '@mui/icons-material/FileUpload';
-import {useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import {useVideo} from "../../contexts/Video.context";
+import {useEffect, useState} from "react";
+import useWindowDimensions from "../../utils/useWindowDimensions.config";
 
 const CreateVideo = () => {
   const navigate = useNavigate();
-  const { video, updateTitleLocal, updateDescriptionLocal, updateVideoFileLocal } = useVideo();
+  const location = useLocation();
+  const {width} = useWindowDimensions();
+  const {
+    video,
+    updateTitleLocal,
+    updateDescriptionLocal,
+    updateVideoFileLocal,
+    updateThumbnailLocal,
+    clearVideoModifier,
+    createVideo,
+    updateVideo,
+  } = useVideo();
+  const [mediaHeight, setMediaHeight] = useState(0);
+
+  useEffect(() => {
+    clearVideoModifier();
+  }, [clearVideoModifier]);
+
+  useEffect(() => {
+    const imageWidth = document.getElementById("create-video-component-width")?.clientWidth;
+    if (imageWidth) {
+      setMediaHeight((imageWidth * 47) / 84);
+    }
+  }, [width]);
 
   return (
     <div>
@@ -13,7 +38,7 @@ const CreateVideo = () => {
         video.videoModifier.videoFile &&
         <Grid container justifyContent={'center'} alignItems={'center'} sx={{ p: '10px 0' }}>
           <Grid item xs={12} md={6}>
-            <video src={URL.createObjectURL(video.videoModifier.videoFile)} controls style={{ width: '100%' }} />
+            <video src={URL.createObjectURL(video.videoModifier.videoFile)} controls style={{ width: '100%', height: `${mediaHeight}px` }} />
           </Grid>
         </Grid>
       }
@@ -34,6 +59,40 @@ const CreateVideo = () => {
             id={'video-upload-input'}
             accept=".mp4"
             onChange={(e) => updateVideoFileLocal(e.target.files!![0])}
+          />
+        </Grid>
+      </Grid>
+
+      {
+        video.videoModifier.thumbnail &&
+        <Grid container justifyContent={'center'} alignItems={'center'} sx={{ p: '10px 0' }}>
+          <Grid item xs={12} md={6}>
+            <img
+              alt={""}
+              src={URL.createObjectURL(video.videoModifier.thumbnail)}
+              width={"100%"}
+              height={`${mediaHeight}px`}
+            />
+          </Grid>
+        </Grid>
+      }
+
+      <Grid container justifyContent={'center'} alignItems={'center'} sx={{ p: '10px 0' }}>
+        <Grid item xs={12} md={6} id={"create-video-component-width"}>
+          <Button
+            variant={'outlined'}
+            color={'error'}
+            fullWidth sx={{ p: '8px 0' }}
+            onClick={() => document.getElementById('thumbnail-upload-input')?.click()}
+          >
+            <FileUploadIcon /> &nbsp; Upload thumbnail (.png)
+          </Button>
+          <input
+            type={'file'}
+            hidden
+            id={'thumbnail-upload-input'}
+            accept=".png"
+            onChange={(e) => updateThumbnailLocal(e.target.files!![0])}
           />
         </Grid>
       </Grid>
@@ -65,7 +124,15 @@ const CreateVideo = () => {
 
       <Grid container justifyContent={'center'} alignItems={'center'} sx={{ p: '10px 0' }} spacing={1}>
         <Grid item xs={6} md={3}>
-          <Button variant={'contained'} color={'error'} fullWidth sx={{ p: '8px 0' }}>Create video</Button>
+          <Button
+            variant={'contained'}
+            color={'error'}
+            fullWidth
+            sx={{ p: '8px 0' }}
+            onClick={location.pathname === 'create-video' ? createVideo : updateVideo}
+          >
+            Create video
+          </Button>
         </Grid>
         <Grid item xs={6} md={3}>
           <Button variant={'outlined'} fullWidth sx={{ p: '8px 0' }} onClick={() => navigate(-1)}>Cancel</Button>
