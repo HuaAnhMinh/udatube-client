@@ -15,7 +15,7 @@ import Body from "./Body/Body";
 import {UserProvider} from "../contexts/User.context";
 import {useNetwork} from "../contexts/Network.context";
 import {SizeProvider} from "../contexts/Size.context";
-import CreateEditVideo from "./CreateVideo/CreateEditVideo";
+import CreateEditVideo from "./CreateEditVideo/CreateEditVideo";
 import {VideoProvider} from "../contexts/Video.context";
 
 function App() {

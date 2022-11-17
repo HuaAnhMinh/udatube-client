@@ -23,7 +23,7 @@ const ProfileAvatar = () => {
 
       { // avatar for my profile
         location.pathname.split('/')[2] === 'me' && !myProfile.isUploadingAvatar &&
-        <Tooltip title={"Click to change avatar, your avatar will be scaled to square"}>
+        <Tooltip title={"Click to change avatar, your avatar will be scaled to square"} arrow>
           <IconButton component={"label"}>
             <input
               type={"file"}

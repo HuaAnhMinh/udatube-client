@@ -49,7 +49,7 @@ const UserCard = ({ user, hasBoxShadow }: { user: ShortFormUser, hasBoxShadow?: 
       />
       <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         <CardContent sx={{ flex: '1 0 auto' }} onClick={handleNavigate}>
-          <Tooltip title={user.username}>
+          <Tooltip title={user.username} arrow>
             <Typography
               component="div"
               variant={width < 900 ? 'h6' : 'h5'}
@@ -109,7 +109,7 @@ const UserCard = ({ user, hasBoxShadow }: { user: ShortFormUser, hasBoxShadow?: 
           {
             !isAuthenticated && !isLoading &&
             <>
-              <Tooltip title={"You must login first to subscribe to a channel"}>
+              <Tooltip title={"You must login first to subscribe to a channel"} arrow>
                 <Button variant={"contained"} color={"error"} onClick={handleClick}>
                   Subscribe
                 </Button>

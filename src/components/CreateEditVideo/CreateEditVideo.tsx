@@ -1,14 +1,18 @@
-import {Button, Grid, TextField} from "@mui/material";
+import {Button, Grid, TextField, Tooltip, Typography} from "@mui/material";
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import {useLocation, useNavigate} from "react-router-dom";
 import {useVideo} from "../../contexts/Video.context";
 import {useEffect, useState} from "react";
 import useWindowDimensions from "../../utils/useWindowDimensions.config";
+import CircularProgress from "@mui/material/CircularProgress";
+import {useSize} from "../../contexts/Size.context";
+import Page404 from "../Page404/Page404";
 
 const CreateEditVideo = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const {width} = useWindowDimensions();
+  const {size} = useSize();
   const {
     video,
     getVideo,
@@ -27,24 +31,71 @@ const CreateEditVideo = () => {
   }, [clearVideoModifier]);
 
   useEffect(() => {
-    const videoId = location.pathname.split('/')[2];
-    void getVideo(videoId);
+    if (location.pathname !== '/create-video') {
+      const videoId = location.pathname.split('/')[2];
+      void getVideo(videoId);
+    }
   }, [getVideo, location.pathname]);
 
   useEffect(() => {
     const imageWidth = document.getElementById("create-video-component-width")?.clientWidth;
     if (imageWidth) {
-      setMediaHeight((imageWidth * 47) / 84);
+      setMediaHeight((imageWidth * 9) / 16);
     }
   }, [width]);
+
+  if (video.isFetchingVideo) {
+    return (
+      <div style={{ textAlign: 'center' }}>
+        <CircularProgress
+          color={'error'}
+          style={{
+            width: size.loadingSizeLarge,
+            height: size.loadingSizeLarge,
+            borderRadius: '50%',
+          }}
+        />
+      </div>
+    );
+  }
+
+  if (video.errorNotFound) {
+    return <Page404 />;
+  }
 
   return (
     <div>
       {
-        video.videoModifier.videoFile &&
+        video.error &&
         <Grid container justifyContent={'center'} alignItems={'center'} sx={{ p: '10px 0' }}>
           <Grid item xs={12} md={6}>
-            <video src={URL.createObjectURL(video.videoModifier.videoFile)} controls style={{ width: '100%', height: `${mediaHeight}px` }} />
+            <Typography component={"p"} variant={"subtitle1"} sx={{ color: 'red', textAlign: 'center' }}>
+              Error: {video.error}
+            </Typography>
+          </Grid>
+        </Grid>
+      }
+
+      {
+        video.message &&
+        <Grid container justifyContent={'center'} alignItems={'center'} sx={{ p: '10px 0' }}>
+          <Grid item xs={12} md={6}>
+            <Typography component={"p"} variant={"subtitle1"} sx={{ color: 'green', textAlign: 'center' }}>
+              {video.message}
+            </Typography>
+          </Grid>
+        </Grid>
+      }
+
+      {
+        video.videoModifier.videoUrl &&
+        <Grid container justifyContent={'center'} alignItems={'center'} sx={{ p: '10px 0' }}>
+          <Grid item xs={12} md={6}>
+            <video
+              src={video.videoModifier.videoUrl}
+              controls
+              style={{ width: '100%', height: `${mediaHeight}px`, borderRadius: '4px' }}
+            />
           </Grid>
         </Grid>
       }
@@ -70,14 +121,15 @@ const CreateEditVideo = () => {
       </Grid>
 
       {
-        video.videoModifier.thumbnail &&
+        video.videoModifier.thumbnailUrl &&
         <Grid container justifyContent={'center'} alignItems={'center'} sx={{ p: '10px 0' }}>
           <Grid item xs={12} md={6}>
             <img
               alt={""}
-              src={URL.createObjectURL(video.videoModifier.thumbnail)}
+              src={video.videoModifier.thumbnailUrl}
               width={"100%"}
               height={`${mediaHeight}px`}
+              style={{ borderRadius: '4px' }}
             />
           </Grid>
         </Grid>
@@ -85,14 +137,16 @@ const CreateEditVideo = () => {
 
       <Grid container justifyContent={'center'} alignItems={'center'} sx={{ p: '10px 0' }}>
         <Grid item xs={12} md={6} id={"create-video-component-width"}>
-          <Button
-            variant={'outlined'}
-            color={'error'}
-            fullWidth sx={{ p: '8px 0' }}
-            onClick={() => document.getElementById('thumbnail-upload-input')?.click()}
-          >
-            <FileUploadIcon /> &nbsp; Upload thumbnail (.png)
-          </Button>
+          <Tooltip title={'Thumbnail will be resized to 16:9 aspect ratio'} arrow>
+            <Button
+              variant={'outlined'}
+              color={'error'}
+              fullWidth sx={{ p: '8px 0' }}
+              onClick={() => document.getElementById('thumbnail-upload-input')?.click()}
+            >
+              <FileUploadIcon /> &nbsp; Upload thumbnail (.png)
+            </Button>
+          </Tooltip>
           <input
             type={'file'}
             hidden
@@ -135,13 +189,22 @@ const CreateEditVideo = () => {
             color={'error'}
             fullWidth
             sx={{ p: '8px 0' }}
-            onClick={location.pathname === 'create-video' ? createVideo : updateVideo}
+            onClick={location.pathname === '/create-video' ? createVideo : updateVideo}
+            disabled={video.isUploading}
           >
-            Create video
+            {location.pathname === '/create-video' ? 'CREATE VIDEO' : 'UPDATE VIDEO'} &nbsp; {video.isUploading && <CircularProgress size={size.loadingSizeSmall} />}
           </Button>
         </Grid>
         <Grid item xs={6} md={3}>
-          <Button variant={'outlined'} fullWidth sx={{ p: '8px 0' }} onClick={() => navigate(-1)}>Cancel</Button>
+          <Button
+            variant={'outlined'}
+            fullWidth
+            sx={{ p: '8px 0' }}
+            onClick={() => navigate(-1)}
+            disabled={video.isUploading}
+          >
+            Cancel
+          </Button>
         </Grid>
       </Grid>
     </div>
