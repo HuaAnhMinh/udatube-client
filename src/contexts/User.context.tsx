@@ -121,12 +121,11 @@ export const useUser = () => {
   const { network } = useNetwork();
 
   const {
-    isAuthenticated,
     getIdTokenClaims,
   } = useAuth0();
   
   const fetchUser = useCallback(async (id: string) => {
-    if (isAuthenticated && network.isOnline) {
+    if (network.isOnline) {
       dispatch("setFailed", false);
       dispatch("setIsFetching", true);
       const accessToken = (await getIdTokenClaims())!!.__raw;
@@ -139,7 +138,7 @@ export const useUser = () => {
       }
       dispatch("setIsFetching", false);
     }
-  }, [dispatch, getIdTokenClaims, isAuthenticated, network.isOnline]);
+  }, [dispatch, getIdTokenClaims, network.isOnline]);
   
   const increaseSubscribers = useCallback(() => {
     dispatch("increaseSubscribers", {});
@@ -150,7 +149,7 @@ export const useUser = () => {
   }, [dispatch]);
 
   const fetchUserSubscribedChannels = useCallback(async () => {
-    if (isAuthenticated && network.isOnline && user.user.id) {
+    if (network.isOnline && user.user.id) {
       dispatch("setIsFetchingSubscribedChannels", true);
       const accessToken = (await getIdTokenClaims())!!.__raw;
       const response = await getUserApi(accessToken, user.user.id);
@@ -159,7 +158,7 @@ export const useUser = () => {
       }
       dispatch("setIsFetchingSubscribedChannels", false);
     }
-  }, [dispatch, getIdTokenClaims, isAuthenticated, network.isOnline, user.user.id]);
+  }, [dispatch, getIdTokenClaims, network.isOnline, user.user.id]);
   
   return {
     fetchUser,

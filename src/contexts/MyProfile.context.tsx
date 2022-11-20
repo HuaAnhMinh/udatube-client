@@ -193,7 +193,6 @@ export const useMyProfile = () => {
   const { network } = useNetwork();
 
   const {
-    isAuthenticated,
     getIdTokenClaims,
   } = useAuth0();
   
@@ -211,30 +210,28 @@ export const useMyProfile = () => {
   const { setError } = useError();
   
   const fetchMyProfile = useCallback(async () => {
-    if (isAuthenticated) {
-      dispatch("setIsFetching", true);
-      const accessToken = (await getIdTokenClaims())!!.__raw;
-      let response = await getMyProfileApi(accessToken);
-      if (response.statusCode === 200) {
-        dispatch('setMyProfile', (response as SuccessResponse).data.user);
-        dispatch('setNewUsername', (response as SuccessResponse).data.user.username);
-        dispatch('setCacheTimestamp', Date.now());
-      }
-      else if (response.statusCode === 404) {
-        response = await registerApi(accessToken);
-        if (response.statusCode === 201) {
-          await fetchMyProfile();
-        }
-      }
-      else {
-        setError(500, 'Internal Server Error');
-      }
-      dispatch("setIsFetching", false);
+    dispatch("setIsFetching", true);
+    const accessToken = (await getIdTokenClaims())!!.__raw;
+    let response = await getMyProfileApi(accessToken);
+    if (response.statusCode === 200) {
+      dispatch('setMyProfile', (response as SuccessResponse).data.user);
+      dispatch('setNewUsername', (response as SuccessResponse).data.user.username);
+      dispatch('setCacheTimestamp', Date.now());
     }
-  }, [dispatch, getIdTokenClaims, isAuthenticated, setError]);
+    else if (response.statusCode === 404) {
+      response = await registerApi(accessToken);
+      if (response.statusCode === 201) {
+        await fetchMyProfile();
+      }
+    }
+    else {
+      setError(500, 'Internal Server Error');
+    }
+    dispatch("setIsFetching", false);
+  }, [dispatch, getIdTokenClaims, setError]);
   
   const subscribeChannel = useCallback(async (userId: string) => {
-    if (isAuthenticated && network.isOnline) {
+    if (network.isOnline) {
       dispatch('setIsSubscribing', userId);
       const accessToken = (await getIdTokenClaims())!!.__raw;
       const result = await subscribeApi(accessToken, userId);
@@ -249,10 +246,10 @@ export const useMyProfile = () => {
         dispatch('setIsSubscribing', '');
       }
     }
-  }, [dispatch, getIdTokenClaims, increaseSubscribers, increaseSubscribersForUser, isAuthenticated, network.isOnline, user.user.id]);
+  }, [dispatch, getIdTokenClaims, increaseSubscribers, increaseSubscribersForUser, network.isOnline, user.user.id]);
 
   const unsubscribeChannel = useCallback(async (userId: string) => {
-    if (isAuthenticated && network.isOnline) {
+    if (network.isOnline) {
       dispatch('setIsUnsubscribing', userId);
       const accessToken = (await getIdTokenClaims())!!.__raw;
       const result = await unsubscribeApi(accessToken, userId);
@@ -267,14 +264,14 @@ export const useMyProfile = () => {
         dispatch('setIsUnsubscribing', '');
       }
     }
-  }, [decreaseSubscribers, decreaseSubscribersForUser, dispatch, getIdTokenClaims, isAuthenticated, network.isOnline, user.user.id]);
+  }, [decreaseSubscribers, decreaseSubscribersForUser, dispatch, getIdTokenClaims, network.isOnline, user.user.id]);
 
   const updateUsernameToDB = useCallback(async () => {
     dispatch('setError', '');
     if (!myProfile.newUsername.trim()) {
       return dispatch('setError', 'Username cannot be empty');
     }
-    if (isAuthenticated && network.isOnline && myProfile.newUsername.trim() && myProfile.newUsername !== myProfile.user.username) {
+    if (network.isOnline && myProfile.newUsername.trim() && myProfile.newUsername !== myProfile.user.username) {
       dispatch("setIsFetching", true);
       const accessToken = (await getIdTokenClaims())!!.__raw;
       const response = await updateUsernameApi(accessToken, myProfile.newUsername.trim());
@@ -286,14 +283,14 @@ export const useMyProfile = () => {
       }
       dispatch("setIsFetching", false);
     }
-  }, [dispatch, getIdTokenClaims, isAuthenticated, myProfile.newUsername, myProfile.user.username, network.isOnline, setError]);
+  }, [dispatch, getIdTokenClaims, myProfile.newUsername, myProfile.user.username, network.isOnline, setError]);
 
   const changeUsername = useCallback((newUsername: string) => {
     dispatch('setNewUsername', newUsername);
   }, [dispatch]);
 
   const changeAvatar = useCallback(async (image: File) => {
-    if (isAuthenticated && network.isOnline) {
+    if (network.isOnline) {
       dispatch("setIsUploadingAvatar", true);
       const accessToken = (await getIdTokenClaims())!!.__raw;
       let response = await getLinkToUploadAvatarApi(accessToken);
@@ -312,10 +309,10 @@ export const useMyProfile = () => {
         dispatch("setIsUploadingAvatar", false);
       }
     }
-  }, [dispatch, getIdTokenClaims, isAuthenticated, network.isOnline, setError]);
+  }, [dispatch, getIdTokenClaims, network.isOnline, setError]);
   
   const fetchMineSubscribedChannels = useCallback(async () => {
-    if (isAuthenticated && network.isOnline) {
+    if (network.isOnline) {
       dispatch("setIsFetchingSubscribedChannels", true);
       const accessToken = (await getIdTokenClaims())!!.__raw;
       const response = await getSubscribedChannelsApi(accessToken, 'me');
@@ -327,7 +324,7 @@ export const useMyProfile = () => {
       }
       dispatch("setIsFetchingSubscribedChannels", false);
     }
-  }, [dispatch, getIdTokenClaims, isAuthenticated, network.isOnline, setError]);
+  }, [dispatch, getIdTokenClaims, network.isOnline, setError]);
 
   return {
     myProfile,

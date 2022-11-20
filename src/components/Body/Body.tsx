@@ -2,7 +2,7 @@ import {ReactNode} from "react";
 import './Body.scss';
 import useWindowDimensions from "../../utils/useWindowDimensions.config";
 import {useError} from "../../contexts/Error.context";
-import {Snackbar} from "@mui/material";
+import {Alert, Snackbar} from "@mui/material";
 import {useAuth0} from "@auth0/auth0-react";
 import CircularProgress from '@mui/material/CircularProgress';
 import {useSize} from "../../contexts/Size.context";
@@ -31,8 +31,9 @@ const Body = ({ children }: { children: ReactNode }) => {
         <Snackbar
           open={!!error.message}
           onClose={() => setError(0, '')}
-          message={error.message}
-        />
+        >
+          <Alert severity={'error'}>{error.message}</Alert>
+        </Snackbar>
       }
     </div>
   );

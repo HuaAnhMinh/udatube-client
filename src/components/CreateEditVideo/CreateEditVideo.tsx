@@ -1,7 +1,7 @@
-import {Button, Grid, TextField, Tooltip, Typography} from "@mui/material";
+import {Alert, Button, Grid, Snackbar, TextField, Tooltip, Typography} from "@mui/material";
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import {useLocation, useNavigate} from "react-router-dom";
-import {useVideo} from "../../contexts/Video.context";
+import {useVideoModifier} from "../../contexts/VideoModifier.context";
 import {useEffect, useState} from "react";
 import useWindowDimensions from "../../utils/useWindowDimensions.config";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -23,12 +23,12 @@ const CreateEditVideo = () => {
     clearVideoModifier,
     createVideo,
     updateVideo,
-  } = useVideo();
+  } = useVideoModifier();
   const [mediaHeight, setMediaHeight] = useState(0);
 
   useEffect(() => {
-    clearVideoModifier();
-  }, [clearVideoModifier]);
+    clearVideoModifier(location.pathname !== '/create-video');
+  }, [clearVideoModifier, location.pathname]);
 
   useEffect(() => {
     if (location.pathname !== '/create-video') {
@@ -77,22 +77,11 @@ const CreateEditVideo = () => {
       }
 
       {
-        video.message &&
-        <Grid container justifyContent={'center'} alignItems={'center'} sx={{ p: '10px 0' }}>
-          <Grid item xs={12} md={6}>
-            <Typography component={"p"} variant={"subtitle1"} sx={{ color: 'green', textAlign: 'center' }}>
-              {video.message}
-            </Typography>
-          </Grid>
-        </Grid>
-      }
-
-      {
-        video.videoModifier.videoUrl &&
+        video.videoUrl &&
         <Grid container justifyContent={'center'} alignItems={'center'} sx={{ p: '10px 0' }}>
           <Grid item xs={12} md={6}>
             <video
-              src={video.videoModifier.videoUrl}
+              src={video.videoUrl}
               controls
               style={{ width: '100%', height: `${mediaHeight}px`, borderRadius: '4px' }}
             />
@@ -121,12 +110,12 @@ const CreateEditVideo = () => {
       </Grid>
 
       {
-        video.videoModifier.thumbnailUrl &&
+        video.thumbnailUrl &&
         <Grid container justifyContent={'center'} alignItems={'center'} sx={{ p: '10px 0' }}>
           <Grid item xs={12} md={6}>
             <img
               alt={""}
-              src={video.videoModifier.thumbnailUrl}
+              src={video.thumbnailUrl}
               width={"100%"}
               height={`${mediaHeight}px`}
               style={{ borderRadius: '4px' }}
@@ -163,7 +152,7 @@ const CreateEditVideo = () => {
             label={'Enter a title for this video'}
             fullWidth
             required
-            value={video.videoModifier.title}
+            value={video.title}
             onChange={(e) => updateTitleLocal(e.target.value)}
           />
         </Grid>
@@ -176,7 +165,7 @@ const CreateEditVideo = () => {
             fullWidth
             multiline
             rows={8}
-            value={video.videoModifier.description}
+            value={video.description}
             onChange={(e) => updateDescriptionLocal(e.target.value)}
           />
         </Grid>
@@ -207,6 +196,11 @@ const CreateEditVideo = () => {
           </Button>
         </Grid>
       </Grid>
+      <Snackbar
+        open={!!video.message}
+      >
+        <Alert severity={'success'}>{video.message}</Alert>
+      </Snackbar>
     </div>
   );
 };

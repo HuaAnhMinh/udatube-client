@@ -16,7 +16,8 @@ import {UserProvider} from "../contexts/User.context";
 import {useNetwork} from "../contexts/Network.context";
 import {SizeProvider} from "../contexts/Size.context";
 import CreateEditVideo from "./CreateEditVideo/CreateEditVideo";
-import {VideoProvider} from "../contexts/Video.context";
+import {VideoModifierProvider} from "../contexts/VideoModifier.context";
+import Videos from "./Videos/Videos";
 
 function App() {
   const { error } = useError();
@@ -35,7 +36,7 @@ function App() {
           <UsersProvider>
             <UserProvider>
               <SizeProvider>
-                <VideoProvider>
+                <VideoModifierProvider>
                   <Header />
                   <Body>
                     <Routes>
@@ -45,10 +46,11 @@ function App() {
                       <Route path="/users/:id" element={<ProtectedRoute component={Profile} />} />
                       <Route path="/create-video" element={<ProtectedRoute component={CreateEditVideo} />} />
                       <Route path="/edit-video/:id" element={<ProtectedRoute component={CreateEditVideo} />} />
+                      <Route path="/videos" element={<Videos />} />
                       <Route path="*" element={<Page404 />} />
                     </Routes>
                   </Body>
-                </VideoProvider>
+                </VideoModifierProvider>
               </SizeProvider>
             </UserProvider>
           </UsersProvider>
