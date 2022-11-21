@@ -38,11 +38,13 @@ const CreateEditVideo = () => {
   }, [getVideo, location.pathname]);
 
   useEffect(() => {
-    const imageWidth = document.getElementById("create-video-component-width")?.clientWidth;
-    if (imageWidth) {
-      setMediaHeight((imageWidth * 9) / 16);
+    if (!video.isFetchingVideo) {
+      const imageWidth = document.getElementById("create-video-component-width")?.clientWidth;
+      if (imageWidth) {
+        setMediaHeight((imageWidth * 9) / 16);
+      }
     }
-  }, [width]);
+  }, [width, video.isFetchingVideo]);
 
   if (video.isFetchingVideo) {
     return (
@@ -66,20 +68,9 @@ const CreateEditVideo = () => {
   return (
     <div>
       {
-        video.error &&
-        <Grid container justifyContent={'center'} alignItems={'center'} sx={{ p: '10px 0' }}>
-          <Grid item xs={12} md={6}>
-            <Typography component={"p"} variant={"subtitle1"} sx={{ color: 'red', textAlign: 'center' }}>
-              Error: {video.error}
-            </Typography>
-          </Grid>
-        </Grid>
-      }
-
-      {
         video.videoUrl &&
         <Grid container justifyContent={'center'} alignItems={'center'} sx={{ p: '10px 0' }}>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={6} sx={{ border: '1px solid #eeeeee', height: `${mediaHeight}px`, borderRadius: '4px' }}>
             <video
               src={video.videoUrl}
               controls
@@ -112,7 +103,7 @@ const CreateEditVideo = () => {
       {
         video.thumbnailUrl &&
         <Grid container justifyContent={'center'} alignItems={'center'} sx={{ p: '10px 0' }}>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={6} sx={{ border: '1px solid #eeeeee', height: `${mediaHeight}px`, borderRadius: '4px' }}>
             <img
               alt={""}
               src={video.thumbnailUrl}
@@ -200,6 +191,11 @@ const CreateEditVideo = () => {
         open={!!video.message}
       >
         <Alert severity={'success'}>{video.message}</Alert>
+      </Snackbar>
+      <Snackbar
+        open={!!video.error}
+      >
+        <Alert severity={'error'}>{video.error}</Alert>
       </Snackbar>
     </div>
   );

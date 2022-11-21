@@ -1,9 +1,9 @@
 import {useLocation, useNavigate} from "react-router-dom";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useUser} from "../../contexts/User.context";
 import Page404 from "../Page404/Page404";
 import './Profile.scss';
-import {Box, Grid, Tab, Tabs, Typography} from "@mui/material";
+import {Alert, Box, Grid, Snackbar, Tab, Tabs, Typography} from "@mui/material";
 import ProfileAvatar from "../ProfileAvatar/ProfileAvatar";
 import MyProfileUsername from "../MyProfileUsername/MyProfileUsername";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -71,24 +71,22 @@ const Profile = () => {
     return <Page404 />
   }
 
+  if ((location.pathname.split('/')[2] === 'me' && !myProfile.user.id) ||
+    (location.pathname.split('/')[2] !== 'me' && user.isFetching)) {
+    return (
+      <div style={{ textAlign: 'center' }}>
+        <CircularProgress color={'error'} style={{
+          width: size.loadingSizeLarge,
+          height: size.loadingSizeLarge,
+          borderRadius: '50%'
+        }}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className={"Profile"}>
-      {
-        location.pathname.split('/')[2] === 'me' && myProfile.error &&
-        <Typography style={{ textAlign: 'center' }} variant={'subtitle1'} color={"error"}>{myProfile.error}</Typography>
-      }
-      {
-        ((location.pathname.split('/')[2] === 'me' && !myProfile.user.id) ||
-          (location.pathname.split('/')[2] !== 'me' && user.isFetching)) &&
-        <div style={{ textAlign: 'center' }}>
-          <CircularProgress color={'error'} style={{
-              width: size.loadingSizeLarge,
-              height: size.loadingSizeLarge,
-              borderRadius: '50%'
-            }}
-          />
-        </div>
-      }
       <Grid container justifyContent={"flex-start"} alignItems={"center"} spacing={1} sx={{ pb: '10px' }}>
         {
           location.pathname.split('/')[2] === 'me' && myProfile.user.id &&
@@ -188,6 +186,11 @@ const Profile = () => {
           </div>
         </Box>
       }
+      <Snackbar open={!!myProfile.error}>
+        <Alert severity={'error'}>
+          {myProfile.error}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

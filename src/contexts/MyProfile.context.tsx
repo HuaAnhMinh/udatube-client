@@ -269,6 +269,7 @@ export const useMyProfile = () => {
   const updateUsernameToDB = useCallback(async () => {
     dispatch('setError', '');
     if (!myProfile.newUsername.trim()) {
+      dispatch('setNewUsername', myProfile.user.username);
       return dispatch('setError', 'Username cannot be empty');
     }
     if (network.isOnline && myProfile.newUsername.trim() && myProfile.newUsername !== myProfile.user.username) {
