@@ -17,7 +17,7 @@ const Users = () => {
   }, [location.search]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    const scroll = document.getElementById('scroll');
+    const scroll = document.getElementById('scroll-users');
     if (scroll && scroll.clientHeight < height && users.nextKey) {
       void fetchUsers(location.search.split('?username=')[1], false);
     }
@@ -25,7 +25,7 @@ const Users = () => {
 
   return (
     <>
-      <div id={"scroll"}>
+      <div id={"scroll-users"}>
         <InfiniteScroll
           next={() => fetchUsers(location.search.split('?username=')[1], false)}
           hasMore={!!users.nextKey}

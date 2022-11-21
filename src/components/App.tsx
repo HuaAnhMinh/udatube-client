@@ -18,6 +18,7 @@ import {SizeProvider} from "../contexts/Size.context";
 import CreateEditVideo from "./CreateEditVideo/CreateEditVideo";
 import {VideoModifierProvider} from "../contexts/VideoModifier.context";
 import Videos from "./Videos/Videos";
+import {VideosProvider} from "../contexts/Videos.context";
 
 function App() {
   const { error } = useError();
@@ -37,19 +38,21 @@ function App() {
             <UserProvider>
               <SizeProvider>
                 <VideoModifierProvider>
-                  <Header />
-                  <Body>
-                    <Routes>
-                      <Route path="/" element={<Home />} />
-                      <Route path="/users" element={<Users />} />
-                      <Route path="/users/me" element={<ProtectedRoute component={Profile} />} />
-                      <Route path="/users/:id" element={<ProtectedRoute component={Profile} />} />
-                      <Route path="/create-video" element={<ProtectedRoute component={CreateEditVideo} />} />
-                      <Route path="/edit-video/:id" element={<ProtectedRoute component={CreateEditVideo} />} />
-                      <Route path="/videos" element={<Videos />} />
-                      <Route path="*" element={<Page404 />} />
-                    </Routes>
-                  </Body>
+                  <VideosProvider>
+                    <Header />
+                    <Body>
+                      <Routes>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/users" element={<Users />} />
+                        <Route path="/users/me" element={<ProtectedRoute component={Profile} />} />
+                        <Route path="/users/:id" element={<ProtectedRoute component={Profile} />} />
+                        <Route path="/create-video" element={<ProtectedRoute component={CreateEditVideo} />} />
+                        <Route path="/edit-video/:id" element={<ProtectedRoute component={CreateEditVideo} />} />
+                        <Route path="/videos" element={<Videos />} />
+                        <Route path="*" element={<Page404 />} />
+                      </Routes>
+                    </Body>
+                  </VideosProvider>
                 </VideoModifierProvider>
               </SizeProvider>
             </UserProvider>

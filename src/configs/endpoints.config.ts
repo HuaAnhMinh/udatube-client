@@ -16,6 +16,7 @@ const endpoints = {
   uploadThumbnail: (videoId: string) => `${host}/videos/${videoId}/thumbnail`,
   uploadVideo: (videoId: string) => `${host}/videos/${videoId}/video`,
   updateVideo: (videoId: string) => `${host}/videos/${videoId}`,
+  getVideos: () => `${host}/videos?`,
 };
 
 export default endpoints;
