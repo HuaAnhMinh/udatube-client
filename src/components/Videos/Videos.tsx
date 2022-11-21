@@ -32,10 +32,10 @@ const Videos = () => {
           loader={<></>}
           dataLength={videos.videos.length}
         >
-          <Grid container spacing={4} alignItems={'center'} sx={{ padding: '2px' }}>
+          <Grid container spacing={4} columns={24} alignItems={'center'} sx={{ padding: '2px' }}>
             {
               videos.videos.map((video) => (
-                <Grid key={video.id} item xs={12} md={4} xl={3} sx={{ padding: '2px' }}>
+                <Grid key={video.id} item xs={24} md={12} lg={6} sx={{ padding: '2px' }}>
                   <VideoCard video={video} />
                 </Grid>
               ))

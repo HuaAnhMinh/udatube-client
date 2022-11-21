@@ -1,4 +1,4 @@
-import {Video} from "../@types/video";
+import {ShortFormVideo} from "../@types/video";
 import {createContext, ReactNode, useCallback, useContext, useReducer} from "react";
 import {useNetwork} from "./Network.context";
 import getVideosApi from "../apis/getVideos.api";
@@ -39,14 +39,14 @@ export const videosReducer = (state: VideosState, action: VideosAction): VideosS
 
 export type VideosState = {
   isFetchingVideos: boolean;
-  videos: Video[];
+  videos: ShortFormVideo[];
   error: string | null;
   nextKey: string | null;
 };
 
 export type VideosActionsMap = {
-  setVideos: Video[];
-  addVideos: Video[];
+  setVideos: ShortFormVideo[];
+  addVideos: ShortFormVideo[];
   setIsFetchingVideos: boolean;
   setError: string | null;
   setNextKey: string | null;
@@ -107,7 +107,7 @@ export const useVideos = () => {
         actionType = 'addVideos';
       }
       
-      const response = await getVideosApi(title, 32, videos.nextKey);
+      const response = await getVideosApi(title, 4, videos.nextKey);
       if (response.statusCode === 200) {
         const data = (response as SuccessResponse).data;
         dispatch(actionType, data.videos);
