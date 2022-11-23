@@ -6,7 +6,7 @@ const getVideosApi = async (title: string, limit: number, nextKey: string | null
   try {
     let endpoint = endpoints.getVideos();
     if (title) {
-      endpoint += `username=${title}`;
+      endpoint += `title=${title}`;
     }
     endpoint += `&limit=${limit}`;
     if (nextKey) {
