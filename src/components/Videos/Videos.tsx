@@ -5,6 +5,7 @@ import useWindowDimensions from "../../utils/useWindowDimensions.config";
 import InfiniteScroll from "react-infinite-scroll-component";
 import {Grid} from "@mui/material";
 import VideoCard from "../VideoCard/VideoCard";
+import VideoCardLoading from "../VideoCardLoading/VideoCardLoading";
 
 const Videos = () => {
   const location = useLocation();
@@ -32,10 +33,10 @@ const Videos = () => {
           loader={<></>}
           dataLength={videos.videos.length}
         >
-          <Grid container spacing={4} columns={24} alignItems={'center'} sx={{ padding: '2px' }}>
+          <Grid container spacing={2} columns={60} alignItems={'center'} sx={{ padding: '2px' }}>
             {
               videos.videos.map((video) => (
-                <Grid key={video.id} item xs={24} md={12} lg={6} sx={{ padding: '2px' }}>
+                <Grid key={video.id} item xs={60} sm={30} md={20} lg={15} xl={12} sx={{ padding: '2px' }}>
                   <VideoCard video={video} />
                 </Grid>
               ))
@@ -43,6 +44,18 @@ const Videos = () => {
           </Grid>
         </InfiniteScroll>
       </div>
+      {
+        videos.isFetchingVideos &&
+        <Grid container spacing={2} columns={60} alignItems={'center'} sx={{ padding: '2px' }}>
+          {
+            [0, 1, 2, 3, 4].map((i) => (
+              <Grid key={i} item xs={60} sm={30} md={20} lg={15} xl={12} sx={{ padding: '2px' }}>
+                <VideoCardLoading />
+              </Grid>
+            ))
+          }
+        </Grid>
+      }
     </>
   );
 };

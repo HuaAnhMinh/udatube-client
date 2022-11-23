@@ -22,6 +22,7 @@ const Profile = () => {
   const [profileTabValue, setProfileTabValue] = useState(0);
 
   useEffect(() => {
+    console.log(location.pathname);
     if (location.pathname.split('/')[2] !== 'me') {
       void fetchUser(location.pathname.split('/')[2]);
     }

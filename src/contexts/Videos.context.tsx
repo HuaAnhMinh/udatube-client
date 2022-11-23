@@ -107,7 +107,7 @@ export const useVideos = () => {
         actionType = 'addVideos';
       }
       
-      const response = await getVideosApi(title, 4, videos.nextKey);
+      const response = await getVideosApi(title, 32, videos.nextKey);
       if (response.statusCode === 200) {
         const data = (response as SuccessResponse).data;
         dispatch(actionType, data.videos);

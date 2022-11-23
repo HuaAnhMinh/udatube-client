@@ -1,4 +1,4 @@
-import {Alert, Button, Grid, Snackbar, TextField, Tooltip, Typography} from "@mui/material";
+import {Alert, Button, Grid, Snackbar, TextField, Tooltip} from "@mui/material";
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import {useLocation, useNavigate} from "react-router-dom";
 import {useVideoModifier} from "../../contexts/VideoModifier.context";
@@ -25,6 +25,10 @@ const CreateEditVideo = () => {
     updateVideo,
   } = useVideoModifier();
   const [mediaHeight, setMediaHeight] = useState(0);
+
+  useEffect(() => {
+    console.log('Remount')
+  }, []);
 
   useEffect(() => {
     clearVideoModifier(location.pathname !== '/create-video');

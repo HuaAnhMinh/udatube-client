@@ -24,8 +24,8 @@ export const sizeReducer = (state: SizeState, action: SizeAction) => {
 };
 
 export type SizeState = {
-  loadingSizeLarge: number | string;
-  loadingSizeSmall: number | string;
+  loadingSizeLarge: number;
+  loadingSizeSmall: number;
   spacing: {
     xs: number;
     sm: number;
@@ -43,8 +43,8 @@ export type SizeState = {
 };
 
 export type SizeActionsMap = {
-  setLoadingSizeLarge: number | string;
-  setLoadingSizeSmall: number | string;
+  setLoadingSizeLarge: number;
+  setLoadingSizeSmall: number;
   setTextLength: number;
 };
 
@@ -64,7 +64,7 @@ type SizeContextInterface = readonly [SizeState, SizeDispatcher];
 
 const initialState: SizeState = {
   loadingSizeLarge: 150,
-  loadingSizeSmall: '20px',
+  loadingSizeSmall: 20,
   spacing: {
     xs: 5,
     sm: 10,
