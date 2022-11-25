@@ -183,8 +183,7 @@ export const useVideoModifier = () => {
   
   const getVideo = useCallback(async (videoId: string) => {
     if (network.isOnline && myProfile.user.id) {
-      const accessToken = (await getIdTokenClaims())!!.__raw;
-      const response = await getVideoApi(accessToken, videoId, myProfile.user.id);
+      const response = await getVideoApi(videoId, myProfile.user.id);
       if (response.statusCode === 200) {
         const video = (response as SuccessResponse).data.video as Video;
         dispatch("setVideoId", video.id);
@@ -207,7 +206,7 @@ export const useVideoModifier = () => {
         dispatch("setIsFetchingVideo", false);
       }
     }
-  }, [dispatch, getIdTokenClaims, myProfile.user.id, network.isOnline]);
+  }, [dispatch, myProfile.user.id, network.isOnline]);
 
   const updateTitleLocal = useCallback((title: string) => {
     dispatch("updateTitle", title);

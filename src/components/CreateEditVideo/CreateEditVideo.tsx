@@ -27,10 +27,6 @@ const CreateEditVideo = () => {
   const [mediaHeight, setMediaHeight] = useState(0);
 
   useEffect(() => {
-    console.log('Remount')
-  }, []);
-
-  useEffect(() => {
     clearVideoModifier(location.pathname !== '/create-video');
   }, [clearVideoModifier, location.pathname]);
 
