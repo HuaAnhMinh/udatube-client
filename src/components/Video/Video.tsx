@@ -1,14 +1,21 @@
-import {Accordion, AccordionDetails, AccordionSummary, Avatar, Button, Grid, Tooltip, Typography} from "@mui/material";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Avatar,
+  Grid,
+  Tooltip,
+  Typography
+} from "@mui/material";
 import {useLocation, useNavigate} from "react-router-dom";
 import {useEffect} from "react";
 import {useVideo} from "../../contexts/Video.context";
 import CircularProgress from "@mui/material/CircularProgress";
-import ThumbUpIcon from '@mui/icons-material/ThumbUp';
-import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {useSize} from "../../contexts/Size.context";
 import Page404 from "../Page404/Page404";
 import useWindowDimensions from "../../utils/useWindowDimensions.config";
+import VideoReaction from "../VideoReaction/VideoReaction";
 
 const Video = () => {
   const location = useLocation();
@@ -50,7 +57,7 @@ const Video = () => {
       <Grid item xs={12} md={8} lg={9}>
         <div>
           <video
-            controls src={`https://udatube-videos-dev.s3.amazonaws.com/${video.video!!.id}.mp4?${Date.now()}`}
+            controls src={`https://udatube-videos-dev.s3.amazonaws.com/${video.video!!.id}.mp4`}
             style={{ maxWidth: '100%', width: '100%', borderRadius: '4px' }}
           />
         </div>
@@ -85,8 +92,7 @@ const Video = () => {
           </Grid>
           <Grid item xs={12} md={3} sx={{ padding: '5px 0'}}>
             <Grid container sx={{ justifyContent: width >= size.width.md ? 'flex-end' : 'flex-start' }}>
-              <Button color={"error"}><ThumbUpIcon /> &nbsp; Like</Button>
-              <Button><ThumbDownIcon /> &nbsp; Dislike</Button>
+              <VideoReaction />
             </Grid>
           </Grid>
         </Grid>

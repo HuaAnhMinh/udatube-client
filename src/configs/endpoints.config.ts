@@ -17,6 +17,10 @@ const endpoints = {
   uploadVideo: (videoId: string) => `${host}/videos/${videoId}/video`,
   updateVideo: (videoId: string) => `${host}/videos/${videoId}`,
   getVideos: () => `${host}/videos?`,
+  likeVideo: (videoId: string) => `${host}/videos/${videoId}/like`,
+  dislikeVideo: (videoId: string) => `${host}/videos/${videoId}/dislike`,
+  unlikeVideo: (videoId: string) => `${host}/videos/${videoId}/unlike`,
+  undislikeVideo: (videoId: string) => `${host}/videos/${videoId}/undislike`,
 };
 
 export default endpoints;
