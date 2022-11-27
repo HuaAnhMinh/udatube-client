@@ -47,7 +47,7 @@ const VideoReaction = () => {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || (isAuthenticated && !myProfile.user.id)) {
     return (
       <>
         <CircularProgress color={'error'} />
@@ -63,7 +63,7 @@ const VideoReaction = () => {
         </Button>
       </Tooltip>
 
-      <Tooltip title={isAuthenticated ? 'Like this video' : 'You must login first to dislike a video'} arrow>
+      <Tooltip title={isAuthenticated ? 'Dislike this video' : 'You must login first to dislike a video'} arrow>
         <Button disabled={video.isReacting} onClick={dislikeButtonHandler}>
           {video.video!!.dislikes.includes(myProfile.user.id) ? <ThumbDownIcon /> : <ThumbDownOutlinedIcon />} &nbsp; Dislike
         </Button>

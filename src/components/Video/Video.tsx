@@ -16,6 +16,7 @@ import {useSize} from "../../contexts/Size.context";
 import Page404 from "../Page404/Page404";
 import useWindowDimensions from "../../utils/useWindowDimensions.config";
 import VideoReaction from "../VideoReaction/VideoReaction";
+import CreateComment from "../CreateComment/CreateComment";
 
 const Video = () => {
   const location = useLocation();
@@ -112,6 +113,7 @@ const Video = () => {
             <Typography>{video.video!!.description}</Typography>
           </AccordionDetails>
         </Accordion>
+        <CreateComment />
       </Grid>
       <Grid item xs={12} md={4} lg={3}>
         <Typography variant={'h6'} component={'div'}>Other videos of {video.video!!.username}</Typography>
