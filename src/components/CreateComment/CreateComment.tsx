@@ -16,12 +16,12 @@ const CreateComment = () => {
     return <Typography sx={{ margin: '20px 0' }}>You must login first to comment this video</Typography>
   }
 
-  if (isLoading || !myProfile.user.id) {
+  if (isLoading) {
     return <CircularProgress sx={{ margin: '20px 0' }} color={'error'} />;
   }
 
   return (
-    <div style={{ display: 'flex', margin: '20px 0', alignItems: 'center' }}>
+    <div style={{ display: 'flex', marginTop: '20px', marginBottom: '30px', alignItems: 'center' }}>
       <Avatar src={`https://udatube-avatars-dev.s3.amazonaws.com/${myProfile.user.id}.png`} />
       <div style={{ flexGrow: 1, paddingLeft: '10px', display: 'flex' }}>
         <TextField

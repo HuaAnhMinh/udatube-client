@@ -17,6 +17,7 @@ import Page404 from "../Page404/Page404";
 import useWindowDimensions from "../../utils/useWindowDimensions.config";
 import VideoReaction from "../VideoReaction/VideoReaction";
 import CreateComment from "../CreateComment/CreateComment";
+import Comments from "../Comments/Comments";
 
 const Video = () => {
   const location = useLocation();
@@ -71,7 +72,7 @@ const Video = () => {
             {video.video!!.title}
           </Typography>
         </div>
-        <Grid container sx={{ justifyContent: 'space-between' }}>
+        <Grid container sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
           <Grid item xs={12} md={9} sx={{ padding: '5px 0' }}>
             <Grid container sx={{ alignItems: 'center' }}>
               <Avatar
@@ -114,6 +115,7 @@ const Video = () => {
           </AccordionDetails>
         </Accordion>
         <CreateComment />
+        <Comments />
       </Grid>
       <Grid item xs={12} md={4} lg={3}>
         <Typography variant={'h6'} component={'div'}>Other videos of {video.video!!.username}</Typography>

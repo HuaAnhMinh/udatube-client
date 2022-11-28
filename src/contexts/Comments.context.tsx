@@ -4,6 +4,8 @@ import {useNetwork} from "./Network.context";
 import createCommentApi from "../apis/createComment.api";
 import {useAuth0} from "@auth0/auth0-react";
 import {SuccessResponse} from "../utils/response.util";
+import getCommentsApi from "../apis/getComments.api";
+import {Comment} from '../@types/comment';
 
 export const commentsReducer = (comments: CommentsState, action: CommentsAction) => {
   switch (action.type) {
@@ -27,10 +29,15 @@ export const commentsReducer = (comments: CommentsState, action: CommentsAction)
         ...comments,
         comments: action.payload,
       };
-    case "addComment":
+    case "addComments":
       return {
         ...comments,
         comments: [action.payload, ...comments.comments],
+      };
+    case "setNextKey":
+      return {
+        ...comments,
+        nextKey: action.payload,
       };
     default:
       return comments;
@@ -42,6 +49,7 @@ export type CommentsState = {
   isModifyingComment: boolean;
   comments: Comment[];
   content: string;
+  nextKey: string | null;
 };
 
 export type CommentsActionsMap = {
@@ -49,7 +57,8 @@ export type CommentsActionsMap = {
   setIsFetchingComments: boolean;
   setIsModifyingComment: boolean;
   setComments: Comment[];
-  addComment: Comment;
+  addComments: Comment;
+  setNextKey: string | null;
 };
 
 export type CommentsAction = {
@@ -71,6 +80,7 @@ const initialState: CommentsState = {
   isModifyingComment: false,
   comments: [],
   content: '',
+  nextKey: null,
 };
 
 export const CommentsContext = createContext<CommentsContextInterface>([initialState, () => {}]);
@@ -109,16 +119,36 @@ export const useComments = () => {
       const accessToken = (await getIdTokenClaims())!!.__raw;
       const response = await createCommentApi(accessToken, videoId, comments.content.trim());
       if (response.statusCode === 201) {
-        dispatch('addComment', (response as SuccessResponse).data.comment);
+        dispatch('addComments', (response as SuccessResponse).data.comment);
         dispatch('setContent', '');
       }
       dispatch("setIsModifyingComment", false);
     }
   }, [comments.content, dispatch, getIdTokenClaims, network.isOnline, video.video?.id]);
 
+  const getComments = useCallback(async (fetchFromStart: boolean) => {
+    if (network.isOnline && video.video?.id) {
+      dispatch('setIsFetchingComments', true);
+      let actionType: 'setComments' | 'addComments';
+      if (fetchFromStart) {
+        actionType = 'setComments';
+      }
+      else {
+        actionType = 'addComments';
+      }
+      const response = await getCommentsApi(video.video.id, 8, comments.nextKey);
+      if (response.statusCode === 200) {
+        dispatch(actionType, (response as SuccessResponse).data.comments);
+        dispatch('setNextKey', (response as SuccessResponse).data.nextKey);
+      }
+      dispatch('setIsFetchingComments', false);
+    }
+  }, [comments.nextKey, dispatch, network.isOnline, video.video?.id]);
+
   return {
     comments,
     changeCommentContent,
     createComment,
+    getComments,
   };
 };
