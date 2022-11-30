@@ -2,10 +2,13 @@ import api from "../configs/api.config";
 import endpoints from "../configs/endpoints.config";
 import {ErrorResponse, parseErrorResponse, parseSuccessResponse, SuccessResponse} from "../utils/response.util";
 
-const getVideosApi = async (title: string, limit: number, nextKey: string | null): Promise<SuccessResponse | ErrorResponse> => {
+const getVideosApi = async (userId: string, title: string, limit: number, nextKey: string | null): Promise<SuccessResponse | ErrorResponse> => {
   try {
     let endpoint = endpoints.getVideos();
-    if (title) {
+    if (userId) {
+      endpoint += `userId=${userId}`;
+    }
+    else if (title) {
       endpoint += `title=${title}`;
     }
     endpoint += `&limit=${limit}`;

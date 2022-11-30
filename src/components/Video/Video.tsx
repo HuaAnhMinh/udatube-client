@@ -18,6 +18,7 @@ import useWindowDimensions from "../../utils/useWindowDimensions.config";
 import VideoReaction from "../VideoReaction/VideoReaction";
 import CreateComment from "../CreateComment/CreateComment";
 import Comments from "../Comments/Comments";
+import VideosByUserId from "../VideosByUserId/VideosByUserId";
 
 const Video = () => {
   const location = useLocation();
@@ -118,7 +119,8 @@ const Video = () => {
         <Comments />
       </Grid>
       <Grid item xs={12} md={4} lg={3}>
-        <Typography variant={'h6'} component={'div'}>Other videos of {video.video!!.username}</Typography>
+        <Typography variant={'h6'} component={'div'} sx={{ marginBottom: '20px' }}>Other videos of {video.video!!.username}</Typography>
+        <VideosByUserId singleCol={true} userId={video.video!!.userId} />
       </Grid>
     </Grid>
   );

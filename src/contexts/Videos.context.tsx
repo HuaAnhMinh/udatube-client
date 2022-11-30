@@ -94,7 +94,7 @@ export const useVideos = () => {
   const {network} = useNetwork();
   const {setError} = useError();
 
-  const getVideos = useCallback(async (title: string, fetchFromStart: boolean) => {
+  const getVideos = useCallback(async (userId: string, title: string, fetchFromStart: boolean) => {
     dispatch('setIsFetchingVideos', true);
     if (network.isOnline) {
       let actionType: 'setVideos' | 'addVideos';
@@ -107,7 +107,7 @@ export const useVideos = () => {
         actionType = 'addVideos';
       }
       
-      const response = await getVideosApi(title, 32, videos.nextKey);
+      const response = await getVideosApi(userId, title, 32, videos.nextKey);
       if (response.statusCode === 200) {
         const data = (response as SuccessResponse).data;
         dispatch(actionType, data.videos);

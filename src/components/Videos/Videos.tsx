@@ -14,13 +14,13 @@ const Videos = () => {
   
   useEffect(() => {
     const title = location.search.split('?title=')[1] || '';
-    void getVideos(title, true);
+    void getVideos('', title, true);
   }, [location.search]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     const scroll = document.getElementById('scroll-videos');
     if (scroll && scroll.clientHeight < height && videos.nextKey) {
-      void getVideos(location.search.split('?title=')[1] || '', false);
+      void getVideos('', location.search.split('?title=')[1] || '', false);
     }
   }, [height, videos.nextKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -28,7 +28,7 @@ const Videos = () => {
     <>
       <div id={"scroll-videos"}>
         <InfiniteScroll
-          next={() => getVideos(location.search.split('?title=')[1] || '', false)}
+          next={() => getVideos('', location.search.split('?title=')[1] || '', false)}
           hasMore={!!videos.nextKey}
           loader={<></>}
           dataLength={videos.videos.length}

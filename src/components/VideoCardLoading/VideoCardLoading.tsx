@@ -9,7 +9,7 @@ const VideoCardLoading = () => {
   useEffect(() => {
     const cardWidth = document.getElementsByClassName("VideoCard")[0]?.clientWidth;
     if (cardWidth) {
-      setHeight((cardWidth * 9 / 16) + 175);
+      setHeight((cardWidth * 9 / 16) + 120);
     }
   }, [width]);
 

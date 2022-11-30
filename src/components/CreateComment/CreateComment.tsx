@@ -32,6 +32,7 @@ const CreateComment = () => {
           onFocus={() => setShowCommentButton(true)}
           value={comments.content}
           onChange={(e) => changeCommentContent(e.target.value)}
+          color={'error'}
         />
         {
           showCommentButton && !comments.isModifyingComment &&
