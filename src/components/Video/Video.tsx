@@ -120,7 +120,7 @@ const Video = () => {
       </Grid>
       <Grid item xs={12} md={4} lg={3}>
         <Typography variant={'h6'} component={'div'} sx={{ marginBottom: '20px' }}>Other videos of {video.video!!.username}</Typography>
-        <VideosByUserId singleCol={true} userId={video.video!!.userId} />
+        <VideosByUserId singleCol={true} userId={video.video!!.userId} exclusiveVideoId={video.video!!.id} />
       </Grid>
     </Grid>
   );

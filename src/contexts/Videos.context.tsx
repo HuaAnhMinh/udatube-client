@@ -94,7 +94,12 @@ export const useVideos = () => {
   const {network} = useNetwork();
   const {setError} = useError();
 
-  const getVideos = useCallback(async (userId: string, title: string, fetchFromStart: boolean) => {
+  const getVideos = useCallback(async (
+    userId: string,
+    title: string,
+    fetchFromStart: boolean,
+    exclusiveVideoId?: string,
+  ) => {
     dispatch('setIsFetchingVideos', true);
     if (network.isOnline) {
       let actionType: 'setVideos' | 'addVideos';
@@ -110,7 +115,8 @@ export const useVideos = () => {
       const response = await getVideosApi(userId, title, 32, videos.nextKey);
       if (response.statusCode === 200) {
         const data = (response as SuccessResponse).data;
-        dispatch(actionType, data.videos);
+        let videos: ShortFormVideo[] = data.videos.filter((video: ShortFormVideo) => video.id !== exclusiveVideoId);
+        dispatch(actionType, videos);
         dispatch('setNextKey', data.nextKey);
       }
       else {

@@ -18,18 +18,22 @@ const MyGridFull = ({ children }: { children: ReactNode }) => (
   </Grid>
 );
 
-const VideosByUserId = ({ singleCol, userId }: { singleCol?: boolean, userId: string }) => {
+const VideosByUserId = ({ singleCol, userId, exclusiveVideoId }: {
+  singleCol?: boolean,
+  userId: string,
+  exclusiveVideoId?: string
+}) => {
   const { videos, getVideos } = useVideos();
   const { height } = useWindowDimensions();
 
   useEffect(() => {
-    void getVideos(userId, '', true);
+    void getVideos(userId, '', true, exclusiveVideoId);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     const scroll = document.getElementById('scroll-videos-userId');
     if (scroll && scroll.clientHeight < height && videos.nextKey) {
-      void getVideos(userId, '', false);
+      void getVideos(userId, '', false, exclusiveVideoId);
     }
   }, [height, videos.nextKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -37,7 +41,7 @@ const VideosByUserId = ({ singleCol, userId }: { singleCol?: boolean, userId: st
     <>
       <div id={"scroll-videos-userId"}>
         <InfiniteScroll
-          next={() => {}}
+          next={() => getVideos(userId, '', false, exclusiveVideoId)}
           hasMore={!!videos.nextKey}
           loader={<></>}
           dataLength={videos.videos.length}
