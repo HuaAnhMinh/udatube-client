@@ -8,7 +8,10 @@ const getVideosApi = async (userId: string, title: string, limit: number, nextKe
     if (userId) {
       endpoint += `userId=${userId}`;
     }
-    else if (title) {
+    if (userId && title) {
+      endpoint += '&';
+    }
+    if (title) {
       endpoint += `title=${title}`;
     }
     endpoint += `&limit=${limit}`;

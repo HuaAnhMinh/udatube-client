@@ -3,7 +3,7 @@ import React, {useEffect, useState} from "react";
 import {useUser} from "../../contexts/User.context";
 import Page404 from "../Page404/Page404";
 import './Profile.scss';
-import {Alert, Box, Grid, Snackbar, Tab, Tabs, Typography} from "@mui/material";
+import {Alert, Box, Grid, Snackbar, Tab, Tabs, TextField, Typography} from "@mui/material";
 import ProfileAvatar from "../ProfileAvatar/ProfileAvatar";
 import MyProfileUsername from "../MyProfileUsername/MyProfileUsername";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -14,6 +14,7 @@ import UserCardLoading from "../UserCardLoading/UserCardLoading";
 import VideosByUserId from "../VideosByUserId/VideosByUserId";
 
 const Profile = () => {
+  const [title, changeTitle] = useState('');
   const location = useLocation();
   const { user, fetchUser, fetchUserSubscribedChannels } = useUser();
   const { myProfile, fetchMineSubscribedChannels } = useMyProfile();
@@ -164,13 +165,30 @@ const Profile = () => {
           <div
             hidden={profileTabValue !== 1}
           >
-            <Box sx={{ p: 1 }}>
+            <Box
+              sx={{ p: 1 }}
+              // component={'form'}
+              // onSubmit={e => {
+              //   e.preventDefault();
+              //
+              // }}
+            >
               {
                 !user.isFetching && !myProfile.isFetching && profileTabValue === 1 &&
-                <VideosByUserId
-                  userId={location.pathname.split('/')[2] === 'me' ? myProfile.user.id : user.user.id}
-                  modify={true}
-                />
+                <>
+                  <TextField
+                    variant={'outlined'}
+                    label={'Search videos by title'}
+                    sx={{ margin: '10px 0', width: '300px' }}
+                    value={title}
+                    onChange={e => changeTitle(e.target.value)}
+                  />
+                  <VideosByUserId
+                    userId={location.pathname.split('/')[2] === 'me' ? myProfile.user.id : user.user.id}
+                    modify={true}
+                    title={title}
+                  />
+                </>
               }
             </Box>
           </div>

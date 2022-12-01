@@ -6,7 +6,7 @@ import {useSize} from "../../contexts/Size.context";
 const ProtectedRoute = ({component, ...args}: { component: ComponentType<object> }) => {
   const { isLoading } = useAuth0();
   const {size} = useSize();
-  const Component = useMemo(() => withAuthenticationRequired(component, args), []);
+  const Component = useMemo(() => withAuthenticationRequired(component, args), [args, component]);
 
   if (isLoading) {
     return (
