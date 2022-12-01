@@ -25,7 +25,6 @@ import {CommentsProvider} from "../contexts/Comments.context";
 
 function App() {
   const { error } = useError();
-  const { size } = useSize();
   useNetwork();
 
   if (error.statusCode === 500) {
@@ -50,10 +49,10 @@ function App() {
                           <Routes>
                             <Route path="/" element={<Home />} />
                             <Route path="/users" element={<Users />} />
-                            <Route path="/users/me" element={<ProtectedRoute component={Profile} size={size} />} />
-                            <Route path="/users/:id" element={<ProtectedRoute component={Profile} size={size} />} />
-                            <Route path="/create-video" element={<ProtectedRoute component={CreateEditVideo} size={size} />} />
-                            <Route path="/edit-video/:id" element={<ProtectedRoute component={CreateEditVideo} size={size} />} />
+                            <Route path="/users/me" element={<ProtectedRoute component={Profile} />} />
+                            <Route path="/users/:id" element={<ProtectedRoute component={Profile} />} />
+                            <Route path="/create-video" element={<ProtectedRoute component={CreateEditVideo} />} />
+                            <Route path="/edit-video/:id" element={<ProtectedRoute component={CreateEditVideo} />} />
                             <Route path="/videos" element={<Videos />} />
                             <Route path="/videos/:id" element={<Video />} />
                             <Route path="*" element={<Page404 />} />

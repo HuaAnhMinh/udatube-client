@@ -18,9 +18,10 @@ const MyGridFull = ({ children }: { children: ReactNode }) => (
   </Grid>
 );
 
-const VideosByUserId = ({ singleCol, userId, exclusiveVideoId }: {
+const VideosByUserId = ({ singleCol, userId, modify, exclusiveVideoId }: {
   singleCol?: boolean,
   userId: string,
+  modify?: boolean,
   exclusiveVideoId?: string
 }) => {
   const { videos, getVideos } = useVideos();
@@ -52,14 +53,14 @@ const VideosByUserId = ({ singleCol, userId, exclusiveVideoId }: {
                 if (singleCol) {
                   return (
                     <MyGridSmall key={video.id}>
-                      <VideoCard video={video}/>
+                      <VideoCard video={video} modify={modify} />
                     </MyGridSmall>
                   )
                 }
 
                 return (
                   <MyGridFull key={video.id}>
-                    <VideoCard video={video} />
+                    <VideoCard video={video} modify={modify} />
                   </MyGridFull>
                 );
               })

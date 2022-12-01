@@ -23,6 +23,7 @@ const endpoints = {
   undislikeVideo: (videoId: string) => `${host}/videos/${videoId}/undislike`,
   createComment: () => `${host}/comments`,
   getComments: (videoId: string) => `${host}/comments?videoId=${videoId}`,
+  deleteVideo: (videoId: string) => `${host}/videos/${videoId}`,
 };
 
 export default endpoints;

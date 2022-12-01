@@ -99,30 +99,30 @@ export const SizeProvider = ({ children }: { children: ReactNode }) => {
 
 export const useSize = () => {
   const [size, dispatch] = useContext(SizeContext);
-  const { width } = useWindowDimensions();
+  // const { width } = useWindowDimensions();
 
-  useEffect(() => {
-    if (width < size.width.sm) {
-      dispatch('setLoadingSizeLarge', 80);
-      dispatch('setLoadingSizeSmall', 10);
-      dispatch('setTextLength', 20);
-    }
-    else if (width < size.width.md) {
-      dispatch('setLoadingSizeLarge', 100);
-      dispatch('setLoadingSizeSmall', 12);
-      dispatch('setTextLength', 25);
-    }
-    else if (width < size.width.lg) {
-      dispatch('setLoadingSizeLarge', 120);
-      dispatch('setLoadingSizeSmall', 14);
-      dispatch('setTextLength', 30);
-    }
-    else {
-      dispatch('setLoadingSizeLarge', 150);
-      dispatch('setLoadingSizeSmall', 16);
-      dispatch('setTextLength', 35);
-    }
-  }, [dispatch, size.width.lg, size.width.md, size.width.sm, width]);
+  // useEffect(() => {
+  //   if (width < size.width.sm) {
+  //     dispatch('setLoadingSizeLarge', 80);
+  //     dispatch('setLoadingSizeSmall', 10);
+  //     dispatch('setTextLength', 20);
+  //   }
+  //   else if (width < size.width.md) {
+  //     dispatch('setLoadingSizeLarge', 100);
+  //     dispatch('setLoadingSizeSmall', 12);
+  //     dispatch('setTextLength', 25);
+  //   }
+  //   else if (width < size.width.lg) {
+  //     dispatch('setLoadingSizeLarge', 120);
+  //     dispatch('setLoadingSizeSmall', 14);
+  //     dispatch('setTextLength', 30);
+  //   }
+  //   else {
+  //     dispatch('setLoadingSizeLarge', 150);
+  //     dispatch('setLoadingSizeSmall', 16);
+  //     dispatch('setTextLength', 35);
+  //   }
+  // }, [dispatch, size.width.lg, size.width.md, size.width.sm, width]);
 
   return {
     size,

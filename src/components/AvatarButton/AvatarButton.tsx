@@ -22,15 +22,7 @@ const AvatarButton = () => {
     setAnchorEl(null);
   };
 
-  const {myProfile, fetchMyProfile} = useMyProfile();
-
-  useEffect(() => {
-    const _fetchMyProfile = async () => {
-      await fetchMyProfile();
-    };
-
-    void _fetchMyProfile();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const {myProfile} = useMyProfile();
 
   const { width } = useWindowDimensions();
 

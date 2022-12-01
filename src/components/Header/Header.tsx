@@ -7,13 +7,22 @@ import LoginButton from "../LoginButton/LoginButton";
 import AvatarButton from "../AvatarButton/AvatarButton";
 import MenuIcon from '@mui/icons-material/Menu';
 import useWindowDimensions from "../../utils/useWindowDimensions.config";
-import {useState} from "react";
+import {useEffect, useState} from "react";
+import {useMyProfile} from "../../contexts/MyProfile.context";
 
 const Header = () => {
   const {
     isLoading,
     isAuthenticated,
   } = useAuth0();
+  
+  const { fetchMyProfile } = useMyProfile();
+  
+  useEffect(() => {
+    if (isAuthenticated) {
+      void fetchMyProfile();
+    }
+  }, [isAuthenticated]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const { width } = useWindowDimensions();
 

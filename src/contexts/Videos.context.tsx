@@ -4,6 +4,8 @@ import {useNetwork} from "./Network.context";
 import getVideosApi from "../apis/getVideos.api";
 import {SuccessResponse} from "../utils/response.util";
 import {useError} from "./Error.context";
+import deleteVideoApi from "../apis/deleteVideo.api";
+import {useAuth0} from "@auth0/auth0-react";
 
 export const videosReducer = (state: VideosState, action: VideosAction): VideosState => {
   switch (action.type) {
@@ -32,6 +34,11 @@ export const videosReducer = (state: VideosState, action: VideosAction): VideosS
         ...state,
         nextKey: action.payload,
       };
+    case "setIsRemoving":
+      return {
+        ...state,
+        isRemoving: action.payload,
+      };
     default:
       return state;
   }
@@ -42,6 +49,7 @@ export type VideosState = {
   videos: ShortFormVideo[];
   error: string | null;
   nextKey: string | null;
+  isRemoving: boolean;
 };
 
 export type VideosActionsMap = {
@@ -50,6 +58,7 @@ export type VideosActionsMap = {
   setIsFetchingVideos: boolean;
   setError: string | null;
   setNextKey: string | null;
+  setIsRemoving: boolean;
 };
 
 export type VideosAction = {
@@ -71,6 +80,7 @@ const initialState: VideosState = {
   isFetchingVideos: false,
   error: null,
   nextKey: null,
+  isRemoving: false,
 };
 
 export const VideosContext = createContext<VideosContextInterface>([initialState, () => {}]);
@@ -93,6 +103,7 @@ export const useVideos = () => {
   const [videos, dispatch] = useContext(VideosContext);
   const {network} = useNetwork();
   const {setError} = useError();
+  const {getIdTokenClaims} = useAuth0();
 
   const getVideos = useCallback(async (
     userId: string,
@@ -125,9 +136,27 @@ export const useVideos = () => {
     }
     dispatch('setIsFetchingVideos', false);
   }, [dispatch, network.isOnline, setError, videos.nextKey]);
+  
+  const deleteVideo = useCallback(async (videoId: string, closeDialog?: Function) => {
+    if (network.isOnline) {
+      dispatch('setIsRemoving', true);
+
+      const accessToken = (await getIdTokenClaims())!!.__raw;
+      const response = await deleteVideoApi(accessToken, videoId);
+      if (response.statusCode === 200) {
+        dispatch('setVideos', videos.videos.filter((video) => video.id !== videoId));
+      }
+      
+      dispatch('setIsRemoving', false);
+      if (closeDialog) {
+        closeDialog();
+      }
+    }
+  }, [dispatch, getIdTokenClaims, network.isOnline, videos.videos]);
 
   return {
     videos,
     getVideos,
+    deleteVideo,
   };
 };

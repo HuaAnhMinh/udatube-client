@@ -11,44 +11,41 @@ import {useMyProfile} from "../../contexts/MyProfile.context";
 import {useSize} from "../../contexts/Size.context";
 import UserCard from "../UserCard/UserCard";
 import UserCardLoading from "../UserCardLoading/UserCardLoading";
+import VideosByUserId from "../VideosByUserId/VideosByUserId";
 
 const Profile = () => {
   const location = useLocation();
   const { user, fetchUser, fetchUserSubscribedChannels } = useUser();
   const { myProfile, fetchMineSubscribedChannels } = useMyProfile();
+  const [profileTabValue, setProfileTabValue] = useState(0);
   const { size } = useSize();
   const navigate = useNavigate();
 
-  const [profileTabValue, setProfileTabValue] = useState(0);
-
   useEffect(() => {
-    console.log(location.pathname);
-    if (location.pathname.split('/')[2] !== 'me') {
-      void fetchUser(location.pathname.split('/')[2]);
+    if (!myProfile.user.id) {
+      return;
     }
-  }, [fetchUser, location.pathname]);
-
-  useEffect(() => {
-    const tabName = location.search.split('?tab=')[1];
-    if (tabName === 'subscribe-channels') {
-      setProfileTabValue(0);
+    const userId = location.pathname.split('/')[2];
+    if (userId !== 'me') {
+      if (userId !== myProfile.user.id) {
+        void fetchUser(location.pathname.split('/')[2]);
+      }
+      else {
+        navigate('/users/me');
+      }
     }
-    else if (tabName === 'videos') {
-      setProfileTabValue(1);
-    }
-  }, [location.search]);
+  }, [fetchUser, location.pathname, myProfile.user.id, navigate]);
   
   useEffect(() => {
     if (profileTabValue === 0 &&
       location.pathname.split('/')[2] === 'me' &&
-      myProfile.user.id &&
-      myProfile.subscribedChannels.length !== 0) {
+      !myProfile.isFetching) {
       void fetchMineSubscribedChannels();
     }
   }, [
     fetchMineSubscribedChannels,
     location.pathname,
-    myProfile.subscribedChannels.length,
+    myProfile.isFetching,
     myProfile.user.id,
     profileTabValue
   ]);
@@ -57,12 +54,14 @@ const Profile = () => {
     if (profileTabValue === 0 &&
       location.pathname.split('/')[2] !== 'me' &&
       !user.isFetching &&
+      myProfile.user.id &&
       user.user.subscribedChannels.length !== 0) {
       void fetchUserSubscribedChannels();
     }
   }, [
     fetchUserSubscribedChannels,
     location.pathname,
+    myProfile.user.id,
     profileTabValue,
     user.isFetching,
     user.user.subscribedChannels.length
@@ -72,8 +71,7 @@ const Profile = () => {
     return <Page404 />
   }
 
-  if ((location.pathname.split('/')[2] === 'me' && !myProfile.user.id) ||
-    (location.pathname.split('/')[2] !== 'me' && user.isFetching)) {
+  if (user.isFetching || myProfile.isFetching) {
     return (
       <div style={{ textAlign: 'center' }}>
         <CircularProgress color={'error'} style={{
@@ -107,14 +105,7 @@ const Profile = () => {
           (location.pathname.split('/')[2] !== 'me' && !user.isFetching)) &&
         <Box sx={{ p: 2, border: '1px solid #dddddd', borderRadius: '5px' }}>
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <Tabs value={profileTabValue} onChange={(_, newValue) => {
-              if (newValue === 0) {
-                navigate(`/users/${location.pathname.split('/')[2]}?tab=subscribe-channels`);
-              }
-              else if (newValue === 1) {
-                navigate(`/users/${location.pathname.split('/')[2]}?tab=videos`);
-              }
-            }}>
+            <Tabs value={profileTabValue} onChange={(_, newValue) => setProfileTabValue(newValue)}>
               <Tab label={'Subscribe channels'} id={'profile-tab-0'} />
               <Tab label={'Videos'} id={'profile-tab-1'} />
             </Tabs>
@@ -175,13 +166,11 @@ const Profile = () => {
           >
             <Box sx={{ p: 1 }}>
               {
-                ((location.pathname.split('/')[2] === 'me' &&
-                    myProfile.user.videos.length === 0) ||
-                  (location.pathname.split('/')[2] !== 'me' &&
-                    user.user.videos.length === 0)) &&
-                <Typography style={{ textAlign: 'center', paddingTop: '35px' }} variant={'subtitle1'} color={"textSecondary"}>
-                  There are no videos
-                </Typography>
+                !user.isFetching && !myProfile.isFetching && profileTabValue === 1 &&
+                <VideosByUserId
+                  userId={location.pathname.split('/')[2] === 'me' ? myProfile.user.id : user.user.id}
+                  modify={true}
+                />
               }
             </Box>
           </div>

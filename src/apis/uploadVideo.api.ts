@@ -7,6 +7,7 @@ const uploadVideoApi = async (url: string, video: File): Promise<SuccessResponse
       headers: {
         'Content-Type': 'video/mp4',
       },
+      onUploadProgress: (progressEvent) => console.log(progressEvent.loaded),
     });
     return parseSuccessResponse(response);
   }
