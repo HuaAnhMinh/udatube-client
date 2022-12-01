@@ -49,6 +49,8 @@ export const videoModifierReducer = (state: VideoModifierState, action: VideoMod
         videoUrl: "",
         thumbnailFile: null,
         thumbnailUrl: "",
+        isUploading: false,
+        uploadingProgress: 0,
       };
     case "setIsFetchingVideo":
       return {
@@ -90,6 +92,16 @@ export const videoModifierReducer = (state: VideoModifierState, action: VideoMod
         ...state,
         id: action.payload,
       };
+    case "setIsUploadingVideo":
+      return {
+        ...state,
+        isUploadingVideo: action.payload,
+      };
+    case "setUploadingProgress":
+      return {
+        ...state,
+        uploadingProgress: action.payload,
+      };
     default:
       return state;
   }
@@ -110,6 +122,8 @@ export type VideoModifierState = {
   thumbnailUrl: string;
   originalTitle: string;
   originalDescription: string;
+  isUploadingVideo: boolean;
+  uploadingProgress: number;
 };
 
 export type VideoModifierActionsMap = {
@@ -126,6 +140,8 @@ export type VideoModifierActionsMap = {
   setVideoId: string;
   setOriginalTitle: string;
   setOriginalDescription: string;
+  setIsUploadingVideo: boolean;
+  setUploadingProgress: number;
 };
 
 export type VideoModifierAction = {
@@ -157,6 +173,8 @@ const initialState: VideoModifierState = {
   thumbnailUrl: "",
   originalTitle: "",
   originalDescription: "",
+  isUploadingVideo: false,
+  uploadingProgress: 0,
 };
 
 export const VideoModifierContext = createContext<VideoModifierContextInterface>([initialState, () => {}]);
@@ -219,17 +237,19 @@ export const useVideoModifier = () => {
   const updateVideoFileLocal = useCallback((videoFile: File) => {
     try {
       const url = URL.createObjectURL(videoFile);
+      console.log('video ', url);
       dispatch("updateVideoFile", {
         file: videoFile,
         url,
       });
     }
-    catch { /** ignored */ }
+    catch (e) { console.log(e) }
   }, [dispatch]);
 
   const updateThumbnailLocal = useCallback((thumbnail: File) => {
     try {
       const url = URL.createObjectURL(thumbnail);
+      console.log('thumbnail ', url);
       dispatch("updateThumbnail", {
         file: thumbnail,
         url,
@@ -260,10 +280,13 @@ export const useVideoModifier = () => {
       return dispatch("setError", (response as ErrorResponse).message);
     }
     const linkToUploadVideo = (response as SuccessResponse).data.url as string;
-    response = await uploadVideoApi(linkToUploadVideo, videoFile);
+    dispatch('setIsUploadingVideo', true);
+    response = await uploadVideoApi(linkToUploadVideo, videoFile, (progress: number) => dispatch('setUploadingProgress', progress));
     if (response.statusCode !== 200) {
       return dispatch("setError", "error when uploading video");
     }
+    dispatch('setIsUploadingVideo', false);
+    dispatch('setUploadingProgress', 0);
   }, [dispatch]);
 
   const createVideo = useCallback(async () => {
@@ -299,9 +322,9 @@ export const useVideoModifier = () => {
       
       dispatch("setIsUploading", false);
       dispatch("setMessage", "Video created successfully");
+      dispatch("clearModifier", false);
       const hideMessage = setTimeout(() => {
         dispatch("setMessage", null);
-        dispatch("clearModifier", false);
         clearTimeout(hideMessage);
       }, 5000);
     }

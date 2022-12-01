@@ -7,6 +7,7 @@ import useWindowDimensions from "../../utils/useWindowDimensions.config";
 import CircularProgress from "@mui/material/CircularProgress";
 import {useSize} from "../../contexts/Size.context";
 import Page404 from "../Page404/Page404";
+import ProgressBar from "../ProgressBar/ProgressBar";
 
 const CreateEditVideo = () => {
   const navigate = useNavigate();
@@ -161,6 +162,15 @@ const CreateEditVideo = () => {
           />
         </Grid>
       </Grid>
+
+      {
+        video.isUploadingVideo &&
+        <Grid container justifyContent={'center'} alignItems={'center'} sx={{ p: '10px 0' }}>
+          <Grid item xs={12} md={6}>
+            <ProgressBar value={video.uploadingProgress} label={'Uploading video...'} />
+          </Grid>
+        </Grid>
+      }
 
       <Grid container justifyContent={'center'} alignItems={'center'} sx={{ p: '10px 0' }} spacing={1}>
         <Grid item xs={6} md={3}>
