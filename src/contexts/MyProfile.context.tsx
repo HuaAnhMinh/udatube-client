@@ -105,6 +105,11 @@ export const myProfileReducer = (state: MyProfileState, action: MyProfileAction)
         ...state,
         isFetchingSubscribedChannels: action.payload,
       };
+    case "setIsChangingUsername":
+      return {
+        ...state,
+        isChangingUsername: action.payload,
+      };
     default:
       return state;
   }
@@ -121,6 +126,7 @@ export type MyProfileState = {
   isUploadingAvatar: boolean;
   subscribedChannels: ShortFormUser[];
   isFetchingSubscribedChannels: boolean;
+  isChangingUsername: boolean;
 };
 
 export type MyProfileActionsMap = {
@@ -137,6 +143,7 @@ export type MyProfileActionsMap = {
   setIsUploadingAvatar: boolean;
   setSubscribedChannels: ShortFormUser[];
   setIsFetchingSubscribedChannels: boolean;
+  setIsChangingUsername: boolean;
 };
 
 export type MyProfileAction = {
@@ -170,6 +177,7 @@ const initialState: MyProfileState = {
   isUploadingAvatar: false,
   subscribedChannels: [],
   isFetchingSubscribedChannels: false,
+  isChangingUsername: false,
 };
 
 export const MyProfileContext = createContext<MyProfileContextInterface>([initialState, () => {}]);
@@ -273,7 +281,7 @@ export const useMyProfile = () => {
       return dispatch('setError', 'Username cannot be empty');
     }
     if (network.isOnline && myProfile.newUsername.trim() && myProfile.newUsername !== myProfile.user.username) {
-      dispatch("setIsFetching", true);
+      dispatch("setIsChangingUsername", true);
       const accessToken = (await getIdTokenClaims())!!.__raw;
       const response = await updateUsernameApi(accessToken, myProfile.newUsername.trim());
       if (response.statusCode === 200) {
@@ -282,7 +290,7 @@ export const useMyProfile = () => {
       else {
         setError(response.statusCode, (response as ErrorResponse).message);
       }
-      dispatch("setIsFetching", false);
+      dispatch("setIsChangingUsername", false);
     }
   }, [dispatch, getIdTokenClaims, myProfile.newUsername, myProfile.user.username, network.isOnline, setError]);
 

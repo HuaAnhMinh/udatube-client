@@ -21,7 +21,7 @@ const MyProfileUsername = () => {
       }}
     >
       {
-        !openEditUsername && !myProfile.isFetching &&
+        !openEditUsername && !myProfile.isChangingUsername &&
         <Typography component={'div'} variant={'h5'} sx={{ position: 'relative' }}>
           {myProfile.user.username}
           <IconButton sx={{ position: 'absolute', pl: '10px', top: '-15%' }} onClick={() => setOpenEditUsername(true)}>
@@ -30,7 +30,7 @@ const MyProfileUsername = () => {
         </Typography>
       }
       {
-        myProfile.isFetching && !openEditUsername &&
+        myProfile.isChangingUsername && !openEditUsername &&
         <CircularProgress color={'error'} sx={{ fontSize: `${size.loadingSizeSmall}px`, mt: '15px' }} />
       }
       {
@@ -42,7 +42,7 @@ const MyProfileUsername = () => {
         <TextField label={'Username'} value={myProfile.newUsername} onChange={(e) => changeUsername(e.target.value)} fullWidth />
       }
       {
-        openEditUsername && !myProfile.isFetching &&
+        openEditUsername && !myProfile.isChangingUsername &&
         <Grid container justifyContent={'space-between'} alignItems={'center'} spacing={1} sx={{ pt: '5px' }}>
           <Grid item xs={6}>
             <Button

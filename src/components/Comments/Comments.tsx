@@ -7,11 +7,15 @@ import useWindowDimensions from "../../utils/useWindowDimensions.config";
 import CommentCardLoading from "../CommentCardLoading/CommentCardLoading";
 
 const Comments = () => {
-  const { getComments, comments } = useComments();
+  const { getComments, comments, clearAllComments } = useComments();
   const { height } = useWindowDimensions();
 
   useEffect(() => {
     void getComments(true);
+
+    return () => {
+      clearAllComments();
+    };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
   
   useEffect(() => {

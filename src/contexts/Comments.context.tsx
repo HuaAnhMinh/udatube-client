@@ -104,6 +104,11 @@ export const useComments = () => {
   const {video} = useVideo();
   const {network} = useNetwork();
   const {getIdTokenClaims} = useAuth0();
+  
+  const clearAllComments = useCallback(() => {
+    dispatch('setComments', []);
+    dispatch('setNextKey', null);
+  }, [dispatch]);
 
   const changeCommentContent = useCallback((content: string) => {
     dispatch('setContent', content);
@@ -150,5 +155,6 @@ export const useComments = () => {
     changeCommentContent,
     createComment,
     getComments,
+    clearAllComments,
   };
 };
