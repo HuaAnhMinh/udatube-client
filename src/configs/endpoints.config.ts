@@ -1,4 +1,4 @@
-const host = 'https://m9ibeaaw33.execute-api.us-east-1.amazonaws.com/dev';
+const host = 'https://7u1b40ckqb.execute-api.ap-southeast-1.amazonaws.com/dev';
 
 const endpoints = {
   base: host,
